@@ -1,0 +1,1 @@
+export { useNews } from './hooks/use-news'

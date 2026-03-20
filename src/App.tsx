@@ -1,20 +1,34 @@
-import { Button } from "@/components/ui/button"
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { AuthProvider } from '@/contexts/auth-context'
+import { ProtectedRoute } from '@/components/protected-route'
+import { MainLayout } from '@/components/main-layout'
+import { Login } from '@/pages/login'
+import { Register } from '@/pages/register'
+import { Keywords } from '@/pages/keywords'
+import { KeywordDashboard } from '@/pages/keyword-dashboard'
+import { News } from '@/pages/news'
 
 export function App() {
   return (
-    <div className="flex min-h-svh p-6">
-      <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div>
-          <h1 className="font-medium">Project ready!</h1>
-          <p>You may now add components and start building.</p>
-          <p>We&apos;ve already added the button component for you.</p>
-          <Button className="mt-2">Button</Button>
-        </div>
-        <div className="font-mono text-xs text-muted-foreground">
-          (Press <kbd>d</kbd> to toggle dark mode)
-        </div>
-      </div>
-    </div>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route
+            element={
+              <ProtectedRoute>
+                <MainLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="/" element={<Keywords />} />
+            <Route path="/keywords/:keywordId" element={<KeywordDashboard />} />
+            <Route path="/keywords/:keywordId/news" element={<News />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
 

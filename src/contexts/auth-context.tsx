@@ -1,0 +1,69 @@
+import { createContext, useContext, type ReactNode } from 'react'
+import { useUser, useLogin, useRegister, useLogout } from '@/hooks/use-auth'
+import { getAccessToken } from '@/lib/api'
+import type { UserResponse } from '@/types/auth'
+
+interface AuthContextType {
+  user: UserResponse | null | undefined
+  isLoading: boolean
+  isAuthenticated: boolean
+  login: (username: string, password: string) => Promise<void>
+  register: (data: {
+    username: string
+    password: string
+    first_name?: string
+    last_name?: string
+    email?: string
+  }) => Promise<void>
+  logout: () => Promise<void>
+}
+
+const AuthContext = createContext<AuthContextType | null>(null)
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const { data: user, isLoading } = useUser()
+  const loginMutation = useLogin()
+  const registerMutation = useRegister()
+  const logoutMutation = useLogout()
+
+  const login = async (username: string, password: string) => {
+    await loginMutation.mutateAsync({ username, password })
+  }
+
+  const register = async (data: {
+    username: string
+    password: string
+    first_name?: string
+    last_name?: string
+    email?: string
+  }) => {
+    await registerMutation.mutateAsync(data)
+  }
+
+  const logout = async () => {
+    await logoutMutation.mutateAsync()
+  }
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoading: isLoading && !!getAccessToken(),
+        isAuthenticated: !!user,
+        login,
+        register,
+        logout,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  )
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext)
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider')
+  }
+  return context
+}
