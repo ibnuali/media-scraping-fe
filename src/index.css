@@ -38,8 +38,6 @@
     --sidebar-accent-foreground: oklch(0.205 0 0);
     --sidebar-border: oklch(0.92 0.01 250);
     --sidebar-ring: oklch(0.55 0.22 265);
-    --gradient-start: oklch(0.55 0.22 265);
-    --gradient-end: oklch(0.6 0.2 320);
     --glass-bg: oklch(1 0 0 / 70%);
     --glass-border: oklch(1 0 0 / 20%);
 }
@@ -76,8 +74,6 @@
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.7 0.2 265);
-    --gradient-start: oklch(0.6 0.25 265);
-    --gradient-end: oklch(0.65 0.22 320);
     --glass-bg: oklch(0.15 0.02 265 / 60%);
     --glass-border: oklch(1 0 0 / 10%);
 }
@@ -137,27 +133,41 @@
 }
 
 @layer utilities {
-  .gradient-bg {
-    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-  }
-  .gradient-text {
-    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
   .glass {
     background: var(--glass-bg);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
     border: 1px solid var(--glass-border);
   }
   .glass-card {
     background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
     border: 1px solid var(--glass-border);
-    box-shadow: 0 8px 32px oklch(0 0 0 / 8%);
+    box-shadow:
+      0 8px 32px oklch(0 0 0 / 8%),
+      inset 0 1px 0 oklch(1 0 0 / 10%);
+  }
+  .glass-nav {
+    background: var(--glass-bg);
+    backdrop-filter: blur(24px) saturate(200%);
+    -webkit-backdrop-filter: blur(24px) saturate(200%);
+    border-bottom: 1px solid var(--glass-border);
+  }
+  .glass-sidebar {
+    background: var(--glass-bg);
+    backdrop-filter: blur(24px) saturate(200%);
+    -webkit-backdrop-filter: blur(24px) saturate(200%);
+  }
+  .liquid-gradient {
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -20%, oklch(0.6 0.2 265 / 15%), transparent),
+      radial-gradient(ellipse 60% 40% at 100% 0%, oklch(0.7 0.15 200 / 10%), transparent);
+  }
+  .dark .liquid-gradient {
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -20%, oklch(0.5 0.2 265 / 20%), transparent),
+      radial-gradient(ellipse 60% 40% at 100% 0%, oklch(0.6 0.15 200 / 15%), transparent);
   }
   .hover-lift {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -172,13 +182,5 @@
   @keyframes float {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-10px); }
-  }
-  .mesh-gradient {
-    background:
-      radial-gradient(at 40% 20%, oklch(0.6 0.15 280 / 15%) 0px, transparent 50%),
-      radial-gradient(at 80% 0%, oklch(0.6 0.2 320 / 10%) 0px, transparent 50%),
-      radial-gradient(at 0% 50%, oklch(0.55 0.18 265 / 10%) 0px, transparent 50%),
-      radial-gradient(at 80% 50%, oklch(0.65 0.15 200 / 10%) 0px, transparent 50%),
-      radial-gradient(at 0% 100%, oklch(0.6 0.2 280 / 10%) 0px, transparent 50%);
   }
 }

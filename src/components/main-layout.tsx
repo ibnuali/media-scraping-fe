@@ -1,12 +1,19 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/auth-context'
+import { useSidebar } from '@/contexts/sidebar-context'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { KeyRound, LogOut, Menu, X, Sparkles, LayoutDashboard, Settings } from 'lucide-react'
+import { KeyRound, LogOut, X, LayoutDashboard, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState } from 'react'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 export function MainLayout() {
   const { user, logout } = useAuth()
+  const { collapsed, setCollapsed } = useSidebar()
   const navigate = useNavigate()
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
@@ -15,12 +22,10 @@ export function MainLayout() {
     navigate('/login')
   }
 
-  const navItems = [
-    { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-  ]
+  const navItems = [{ to: "/", label: "Dashboard", icon: LayoutDashboard }]
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="liquid-gradient flex min-h-screen bg-background">
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div
@@ -32,34 +37,44 @@ export function MainLayout() {
       {/* Sidebar */}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-50 w-72 transform border-r border-border/50 bg-sidebar transition-transform duration-300 ease-in-out lg:static lg:translate-x-0',
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          "glass-sidebar fixed inset-y-0 left-0 z-50 transform border-r border-border/50 transition-all duration-300 ease-in-out lg:translate-x-0",
+          sidebarOpen ? "translate-x-0" : "-translate-x-full",
+          collapsed ? "w-20" : "w-72"
         )}
       >
         <div className="flex h-full flex-col">
           {/* Logo */}
-          <div className="flex h-16 items-center justify-between border-b border-border/50 px-6">
-            <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-xl gradient-bg shadow-lg shadow-primary/25">
-                <KeyRound className="size-5 text-white" />
+          <div className={cn(
+            "flex h-16 items-center border-b border-border/50 transition-all duration-300",
+            collapsed ? "justify-center px-2" : "justify-between px-6"
+          )}>
+            <div className={cn("flex items-center", collapsed ? "justify-center" : "gap-3")}>
+              <div className="flex size-10 items-center justify-center rounded-xl bg-primary shadow-lg shadow-primary/25">
+                <KeyRound className="size-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold gradient-text">KeyCrawl</span>
+              {!collapsed && (
+                <span className="text-xl font-bold text-primary">KeyCrawl</span>
+              )}
             </div>
-            <Button
-              variant="ghost"
-              size="icon-xs"
-              className="lg:hidden"
-              onClick={() => setSidebarOpen(false)}
-            >
-              <X className="size-4" />
-            </Button>
+            {!collapsed && (
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                className="lg:hidden"
+                onClick={() => setSidebarOpen(false)}
+              >
+                <X className="size-4" />
+              </Button>
+            )}
           </div>
 
           {/* Navigation */}
           <nav className="flex-1 space-y-1 p-4">
-            <div className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/60">
-              Navigation
-            </div>
+            {!collapsed && (
+              <div className="mb-2 px-3 text-xs font-semibold tracking-wider text-muted-foreground/60 uppercase">
+                Navigation
+              </div>
+            )}
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
@@ -67,92 +82,114 @@ export function MainLayout() {
                 onClick={() => setSidebarOpen(false)}
                 className={({ isActive }) =>
                   cn(
-                    'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200',
+                    "flex items-center gap-3 rounded-xl text-sm font-medium transition-all duration-200",
+                    collapsed ? "justify-center px-3 py-3" : "px-3 py-2.5",
                     isActive
-                      ? 'gradient-bg text-white shadow-lg shadow-primary/25'
-                      : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+                      : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                   )
                 }
               >
-                <item.icon className="size-5" />
-                {item.label}
+                {collapsed ? (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <item.icon className="size-5" />
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      {item.label}
+                    </TooltipContent>
+                  </Tooltip>
+                ) : (
+                  <>
+                    <item.icon className="size-5" />
+                    {item.label}
+                  </>
+                )}
               </NavLink>
             ))}
-
-            <div className="mt-8 mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/60">
-              Quick Stats
-            </div>
-
-            {/* Quick stats card */}
-            <div className="mx-1 rounded-xl border border-border/50 bg-muted/30 p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <Sparkles className="size-4 text-primary" />
-                <span className="text-sm font-medium">Status</span>
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">API Status</span>
-                  <span className="flex items-center gap-1.5">
-                    <span className="size-2 rounded-full bg-green-500 animate-pulse" />
-                    <span className="text-green-600 font-medium">Online</span>
-                  </span>
-                </div>
-              </div>
-            </div>
           </nav>
 
           {/* User section */}
           <div className="border-t border-border/50 p-4">
-            <div className="flex items-center gap-3 rounded-xl bg-muted/30 p-3">
-              <div className="flex size-10 items-center justify-center rounded-xl gradient-bg text-sm font-bold text-white shadow-lg shadow-primary/25">
-                {user?.username?.charAt(0).toUpperCase() || 'U'}
+            {collapsed ? (
+              <div className="flex flex-col items-center gap-3">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex size-10 items-center justify-center rounded-xl bg-primary text-sm font-bold text-primary-foreground shadow-lg shadow-primary/25 cursor-pointer">
+                      {user?.username?.charAt(0).toUpperCase() || "U"}
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">
+                    <p className="font-semibold">{user?.username}</p>
+                    <p className="text-xs text-muted-foreground">{user?.email || "Logged in"}</p>
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon-xs"
+                      onClick={handleLogout}
+                      className="text-muted-foreground hover:text-destructive"
+                    >
+                      <LogOut className="size-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">
+                    Logout
+                  </TooltipContent>
+                </Tooltip>
               </div>
-              <div className="flex-1 overflow-hidden">
-                <p className="truncate text-sm font-semibold">{user?.username}</p>
-                <p className="truncate text-xs text-muted-foreground">
-                  {user?.email || 'Logged in'}
-                </p>
+            ) : (
+              <div className="glass-card flex items-center gap-3 rounded-xl p-3">
+                <div className="flex size-10 items-center justify-center rounded-xl bg-primary text-sm font-bold text-primary-foreground shadow-lg shadow-primary/25">
+                  {user?.username?.charAt(0).toUpperCase() || "U"}
+                </div>
+                <div className="flex-1 overflow-hidden">
+                  <p className="truncate text-sm font-semibold">
+                    {user?.username}
+                  </p>
+                  <p className="truncate text-xs text-muted-foreground">
+                    {user?.email || "Logged in"}
+                  </p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  onClick={handleLogout}
+                  title="Logout"
+                  className="text-muted-foreground hover:text-destructive"
+                >
+                  <LogOut className="size-4" />
+                </Button>
               </div>
-              <Button
-                variant="ghost"
-                size="icon-xs"
-                onClick={handleLogout}
-                title="Logout"
-                className="text-muted-foreground hover:text-destructive"
-              >
-                <LogOut className="size-4" />
-              </Button>
-            </div>
+            )}
           </div>
+
+          {/* Collapse toggle button - desktop only */}
+          <Button
+            variant="ghost"
+            size="icon-xs"
+            onClick={() => setCollapsed(!collapsed)}
+            className="absolute -right-3 top-20 z-50 hidden size-6 rounded-full border border-border bg-background shadow-md hover:bg-muted lg:flex"
+          >
+            {collapsed ? (
+              <ChevronRight className="size-3" />
+            ) : (
+              <ChevronLeft className="size-3" />
+            )}
+          </Button>
         </div>
       </aside>
 
       {/* Main content */}
-      <div className="flex flex-1 flex-col overflow-hidden">
-        {/* Top bar */}
-        <header className="flex h-16 items-center justify-between border-b border-border/50 bg-background/80 backdrop-blur-lg px-4 lg:px-6">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden"
-            onClick={() => setSidebarOpen(true)}
-          >
-            <Menu className="size-5" />
-          </Button>
-          <div className="flex-1" />
-          <div className="flex items-center gap-4">
-            <span className="hidden text-sm text-muted-foreground sm:block">
-              Welcome back, <span className="font-semibold text-foreground">{user?.username}</span>
-            </span>
-          </div>
-        </header>
-
+      <div className={cn(
+        "flex flex-1 flex-col transition-all duration-300",
+        collapsed ? "lg:pl-20" : "lg:pl-72"
+      )}>
         {/* Page content */}
-        <main className="flex-1 overflow-auto p-4 lg:p-8 relative">
-          <div className="absolute inset-0 mesh-gradient opacity-30 pointer-events-none" />
-          <div className="relative z-10">
-            <Outlet />
-          </div>
+        <main className="relative flex-1 overflow-y-auto p-4 lg:p-8">
+          <Outlet />
         </main>
       </div>
     </div>

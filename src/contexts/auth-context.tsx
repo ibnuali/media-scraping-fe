@@ -1,5 +1,5 @@
 import { createContext, useContext, type ReactNode } from 'react'
-import { useUser, useLogin, useRegister, useLogout } from '@/hooks/use-auth'
+import { useUser, useLogin, useRegister, useLogout } from '@/features/auth'
 import { getAccessToken } from '@/lib/api'
 import type { UserResponse } from '@/types/auth'
 

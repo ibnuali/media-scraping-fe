@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { keywordsApi } from '@/lib/api'
-import type { KeywordCreate, KeywordUpdate } from '@/types/keyword'
+import type { KeywordUpdate } from '@/types/keyword'
 
 export function useKeywords() {
   return useQuery({

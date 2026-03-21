@@ -23,11 +23,16 @@ export interface NewsResponse {
   title: string | null
   url: string
   summary?: string
+  published_at?: string | null
+  published_by?: string | null
+  sentiment?: 'positive' | 'negative' | 'neutral' | null
   keyword_matches?: { keyword: string; count: number }[]
   status?: string
   error?: string | null
   scraped_at?: string
 }
+
+export type NewsItem = NewsResponse
 
 export interface PaginatedNewsResponse {
   total: number
