@@ -1,11 +1,5 @@
 import { Minus } from "lucide-react"
-import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Tooltip,
-} from "recharts"
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts"
 
 const SENTIMENT_COLORS = {
   positive: "#10b981",
@@ -39,23 +33,25 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
         <p className="text-sm font-medium" style={{ color: data.payload.fill }}>
           {data.name}
         </p>
-        <p className="text-xs text-muted-foreground">
-          {total} articles
-        </p>
+        <p className="text-xs text-muted-foreground">{total} articles</p>
       </div>
     )
   }
   return null
 }
 
-export function SentimentChart({ positive, negative, neutral }: SentimentChartProps) {
+export function SentimentChart({
+  positive,
+  negative,
+  neutral,
+}: SentimentChartProps) {
   const total = positive + negative + neutral
 
   const data = [
     { name: "Positive", value: positive, fill: SENTIMENT_COLORS.positive },
     { name: "Negative", value: negative, fill: SENTIMENT_COLORS.negative },
     { name: "Neutral", value: neutral, fill: SENTIMENT_COLORS.neutral },
-  ].filter(item => item.value > 0)
+  ].filter((item) => item.value > 0)
 
   if (total === 0) {
     return (
@@ -72,7 +68,7 @@ export function SentimentChart({ positive, negative, neutral }: SentimentChartPr
   const getPercentage = (value: number) => ((value / total) * 100).toFixed(0)
 
   return (
-    <div className="h-64 flex items-center justify-center">
+    <div className="flex h-64 items-center justify-center">
       <div className="relative">
         <ResponsiveContainer width={200} height={200}>
           <PieChart>
@@ -98,7 +94,7 @@ export function SentimentChart({ positive, negative, neutral }: SentimentChartPr
         </ResponsiveContainer>
 
         {/* Center text */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
           <span className="text-3xl font-bold">{total}</span>
           <span className="text-xs text-muted-foreground">Total</span>
         </div>

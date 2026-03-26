@@ -17,7 +17,11 @@ interface RegisterFormProps {
   error: string
 }
 
-export function RegisterForm({ onSubmit, isLoading, error }: RegisterFormProps) {
+export function RegisterForm({
+  onSubmit,
+  isLoading,
+  error,
+}: RegisterFormProps) {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
@@ -47,8 +51,8 @@ export function RegisterForm({ onSubmit, isLoading, error }: RegisterFormProps) 
   const displayError = localError || error
 
   return (
-    <div className="flex flex-1 flex-col justify-center p-8 sm:p-12 lg:p-16 relative overflow-y-auto">
-      <div className="mx-auto w-full max-w-sm relative z-10">
+    <div className="relative flex flex-1 flex-col justify-center overflow-y-auto p-8 sm:p-12 lg:p-16">
+      <div className="relative z-10 mx-auto w-full max-w-sm">
         <div className="mb-8 flex items-center gap-2 lg:hidden">
           <div className="flex size-10 items-center justify-center rounded-xl bg-primary">
             <KeyRound className="size-5 text-primary-foreground" />
@@ -57,7 +61,9 @@ export function RegisterForm({ onSubmit, isLoading, error }: RegisterFormProps) 
         </div>
 
         <h2 className="text-3xl font-bold tracking-tight">Create account</h2>
-        <p className="mt-2 text-muted-foreground">Fill in your details to get started</p>
+        <p className="mt-2 text-muted-foreground">
+          Fill in your details to get started
+        </p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
           {displayError && (
@@ -66,7 +72,9 @@ export function RegisterForm({ onSubmit, isLoading, error }: RegisterFormProps) 
             </div>
           )}
           <div className="space-y-2">
-            <Label htmlFor="username" className="text-sm font-medium">Username</Label>
+            <Label htmlFor="username" className="text-sm font-medium">
+              Username
+            </Label>
             <Input
               id="username"
               type="text"
@@ -81,7 +89,9 @@ export function RegisterForm({ onSubmit, isLoading, error }: RegisterFormProps) 
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label htmlFor="firstName" className="text-sm font-medium">First Name</Label>
+              <Label htmlFor="firstName" className="text-sm font-medium">
+                First Name
+              </Label>
               <Input
                 id="firstName"
                 type="text"
@@ -94,7 +104,9 @@ export function RegisterForm({ onSubmit, isLoading, error }: RegisterFormProps) 
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="lastName" className="text-sm font-medium">Last Name</Label>
+              <Label htmlFor="lastName" className="text-sm font-medium">
+                Last Name
+              </Label>
               <Input
                 id="lastName"
                 type="text"
@@ -108,7 +120,9 @@ export function RegisterForm({ onSubmit, isLoading, error }: RegisterFormProps) 
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-sm font-medium">Email</Label>
+            <Label htmlFor="email" className="text-sm font-medium">
+              Email
+            </Label>
             <Input
               id="email"
               type="email"
@@ -121,7 +135,9 @@ export function RegisterForm({ onSubmit, isLoading, error }: RegisterFormProps) 
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-sm font-medium">Password</Label>
+            <Label htmlFor="password" className="text-sm font-medium">
+              Password
+            </Label>
             <Input
               id="password"
               type="password"
@@ -135,7 +151,9 @@ export function RegisterForm({ onSubmit, isLoading, error }: RegisterFormProps) 
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword" className="text-sm font-medium">Confirm Password</Label>
+            <Label htmlFor="confirmPassword" className="text-sm font-medium">
+              Confirm Password
+            </Label>
             <Input
               id="confirmPassword"
               type="password"
@@ -150,7 +168,7 @@ export function RegisterForm({ onSubmit, isLoading, error }: RegisterFormProps) 
           </div>
           <Button
             type="submit"
-            className="h-12 w-full rounded-xl font-medium shadow-lg shadow-primary/25 transition-all hover:shadow-xl hover:shadow-primary/30 mt-2"
+            className="mt-2 h-12 w-full rounded-xl font-medium shadow-lg shadow-primary/25 transition-all hover:shadow-xl hover:shadow-primary/30"
             disabled={isLoading}
           >
             {isLoading ? (
@@ -169,7 +187,10 @@ export function RegisterForm({ onSubmit, isLoading, error }: RegisterFormProps) 
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
           Already have an account?{" "}
-          <Link to="/login" className="font-semibold text-primary hover:underline">
+          <Link
+            to="/login"
+            className="font-semibold text-primary hover:underline"
+          >
             Sign in
           </Link>
         </p>

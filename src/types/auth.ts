@@ -7,7 +7,7 @@ export interface Token {
 }
 
 export interface UserResponse {
-  id: string  // UUID
+  id: string // UUID
   username: string
   first_name?: string
   last_name?: string
@@ -26,4 +26,14 @@ export interface RegisterRequest {
   first_name?: string
   last_name?: string
   email?: string
+}
+
+export interface UserProfileUpdate {
+  first_name?: string
+  last_name?: string
+}
+
+export interface PasswordChange {
+  current_password: string
+  new_password: string
 }

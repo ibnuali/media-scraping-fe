@@ -27,24 +27,24 @@ export function ThemeToggle() {
         className={cn(
           "size-5 transition-all duration-300",
           theme === "light"
-            ? "rotate-0 scale-100 text-amber-500"
-            : "rotate-90 scale-0 absolute"
+            ? "scale-100 rotate-0 text-amber-500"
+            : "absolute scale-0 rotate-90"
         )}
       />
       <Moon
         className={cn(
           "size-5 transition-all duration-300",
           theme === "dark"
-            ? "rotate-0 scale-100 text-blue-400"
-            : "-rotate-90 scale-0 absolute"
+            ? "scale-100 rotate-0 text-blue-400"
+            : "absolute scale-0 -rotate-90"
         )}
       />
       <Monitor
         className={cn(
           "size-5 transition-all duration-300",
           theme === "system"
-            ? "rotate-0 scale-100 text-primary"
-            : "scale-0 absolute"
+            ? "scale-100 rotate-0 text-primary"
+            : "absolute scale-0"
         )}
       />
       <span className="sr-only">Toggle theme</span>

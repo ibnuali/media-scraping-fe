@@ -1,6 +1,24 @@
 import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
-import { Pencil, Trash2, Clock, ArrowRight, Loader2, CheckCircle, XCircle, Calendar, BarChart3 } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  Pencil,
+  Trash2,
+  Loader2,
+  XCircle,
+  MoreVertical,
+  BarChart3,
+  Play,
+  Search,
+  FileText,
+  Sparkles,
+  CheckCircle,
+} from "lucide-react"
 import { formatLastScraped } from "@/lib/utils"
 import type { KeywordResponse } from "@/types/keyword"
 import type { ScrapeJob } from "@/hooks/use-async-scrape"
@@ -15,6 +33,61 @@ interface KeywordCardProps {
   isDeleting: boolean
 }
 
+function getStageInfo(
+  stage: ScrapeJob["stage"],
+  progress: { current: number; total: number } | null
+) {
+  switch (stage) {
+    case "searching":
+      return {
+        icon: <Search className="size-3.5 animate-pulse" />,
+        label: "Searching...",
+        color: "text-blue-500",
+      }
+    case "scraping":
+      return {
+        icon: <FileText className="size-3.5 animate-pulse" />,
+        label: progress
+          ? `Scraping ${progress.current}/${progress.total}`
+          : "Scraping...",
+        color: "text-amber-500",
+      }
+    case "analyzing":
+      return {
+        icon: <Sparkles className="size-3.5 animate-pulse" />,
+        label: progress
+          ? `Analyzing ${progress.current}/${progress.total}`
+          : "Analyzing...",
+        color: "text-purple-500",
+      }
+    case "summarizing":
+      return {
+        icon: <FileText className="size-3.5 animate-pulse" />,
+        label: "Summarizing...",
+        color: "text-cyan-500",
+      }
+    case "completed":
+      return {
+        icon: <CheckCircle className="size-3.5" />,
+        label: "Done",
+        color: "text-green-500",
+      }
+    case "failed":
+      return {
+        icon: <XCircle className="size-3.5" />,
+        label: "Failed",
+        color: "text-destructive",
+      }
+    default:
+      // No stage yet - waiting for job to start
+      return {
+        icon: <Loader2 className="size-3.5 animate-spin" />,
+        label: "Starting...",
+        color: "text-muted-foreground",
+      }
+  }
+}
+
 export function KeywordCard({
   keyword,
   scrapeJob,
@@ -26,103 +99,101 @@ export function KeywordCard({
 }: KeywordCardProps) {
   const navigate = useNavigate()
 
-  const getScrapeButtonContent = () => {
-    if (isScraping) {
-      return (
-        <>
-          <Loader2 className="size-4 animate-spin" />
-          {scrapeJob?.progress
-            ? `${scrapeJob.progress.current}/${scrapeJob.progress.total}`
-            : scrapeJob?.status || "Starting..."}
-        </>
-      )
+  const getScrapeStatus = () => {
+    if (isScraping && scrapeJob) {
+      const stageInfo = getStageInfo(scrapeJob.stage, scrapeJob.progress)
+      return {
+        icon: stageInfo.icon,
+        label: stageInfo.label,
+        color: stageInfo.color,
+      }
     }
-    if (scrapeJob?.status === "completed") {
-      return (
-        <>
-          <CheckCircle className="size-4 text-green-500" />
-          Completed ({scrapeJob.progress?.total || 0} results)
-        </>
-      )
+    if (scrapeJob?.status === "failed" || scrapeJob?.stage === "failed") {
+      return {
+        icon: <XCircle className="size-3.5 text-destructive" />,
+        label: scrapeJob.error || "Failed",
+        color: "text-destructive",
+      }
     }
-    if (scrapeJob?.status === "failed") {
-      return (
-        <>
-          <XCircle className="size-4 text-destructive" />
-          Failed
-        </>
-      )
+    if (scrapeJob?.stage === "completed") {
+      return {
+        icon: <CheckCircle className="size-3.5 text-green-500" />,
+        label: "Done",
+        color: "text-green-500",
+      }
     }
-    return (
-      <>
-        <Clock className="size-4" />
-        Scrape Now
-      </>
-    )
+    return null
   }
 
+  const status = getScrapeStatus()
+
   return (
-    <div className="group hover-lift rounded-2xl border border-border/50 bg-card/50 p-6 backdrop-blur-sm">
-      <div className="mb-4 flex items-start justify-between">
-        <div className="flex-1">
-          <h3 className="truncate text-lg font-semibold">{keyword.keyword}</h3>
-          <p className="text-sm text-muted-foreground">Max {keyword.max_result} results</p>
-          <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Calendar className="size-3" />
-            <span>Last scraped: {formatLastScraped(keyword.last_scraped)}</span>
+    <div className="group flex items-center justify-between gap-4 rounded-xl border border-border/50 bg-card/50 px-4 py-3 backdrop-blur-sm transition-colors hover:bg-muted/50">
+      {/* Left: Keyword info */}
+      <button
+        onClick={() => navigate(`/keywords/${keyword.id}`)}
+        className="flex flex-1 items-center gap-3 text-left"
+      >
+        <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+          <BarChart3 className="size-4" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-medium">{keyword.keyword}</p>
+          <p className="text-xs text-muted-foreground">
+            Max {keyword.max_result} • {formatLastScraped(keyword.last_scraped)}
+          </p>
+        </div>
+      </button>
+
+      {/* Right: Status + Actions */}
+      <div className="flex items-center gap-2">
+        {/* Scrape status or Scrape button */}
+        {status ? (
+          <div className={`flex items-center gap-1.5 text-xs ${status.color}`}>
+            {status.icon}
+            <span>{status.label}</span>
           </div>
-        </div>
-        <div className="flex gap-1">
-          <Button
-            variant="ghost"
-            size="icon-xs"
-            onClick={() => onEdit(keyword)}
-            className="opacity-0 transition-opacity group-hover:opacity-100"
-          >
-            <Pencil className="size-3.5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon-xs"
-            onClick={() => onDelete(keyword.id)}
-            disabled={isDeleting}
-            className="text-destructive opacity-0 transition-opacity group-hover:opacity-100 hover:text-destructive"
-          >
-            <Trash2 className="size-3.5" />
-          </Button>
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onScrape(keyword)}
-          className="h-10 w-full rounded-xl"
-        >
-          {getScrapeButtonContent()}
-        </Button>
-
-        <div className="grid grid-cols-2 gap-2">
+        ) : (
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate(`/keywords/${keyword.id}`)}
-            className="h-10 rounded-xl"
+            onClick={() => onScrape(keyword)}
+            className="h-8 gap-1.5 text-xs"
           >
-            <BarChart3 className="size-4" />
-            Dashboard
+            <Play className="size-3.5" />
+            Scrape
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate(`/keywords/${keyword.id}/news`)}
-            className="group/btn h-10 rounded-xl"
-          >
-            View News
-            <ArrowRight className="ml-1 size-4 transition-transform group-hover/btn:translate-x-1" />
-          </Button>
-        </div>
+        )}
+
+        {/* More actions dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                className="opacity-0 group-hover:opacity-100"
+              >
+                <MoreVertical className="size-4" />
+              </Button>
+            }
+          />
+
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => onEdit(keyword)}>
+              <Pencil className="size-4" />
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => onDelete(keyword.id)}
+              disabled={isDeleting}
+              className="text-destructive focus:text-destructive"
+            >
+              <Trash2 className="size-4" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   )

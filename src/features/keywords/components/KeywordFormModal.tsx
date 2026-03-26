@@ -77,8 +77,19 @@ export function KeywordFormModal({
                 type="number"
                 min={1}
                 max={100}
-                value={maxResult}
-                onChange={(e) => setMaxResult(parseInt(e.target.value) || 10)}
+                placeholder="1-100"
+                value={maxResult || ""}
+                onChange={(e) => {
+                  const value = e.target.value
+                  if (value === "") {
+                    setMaxResult(0)
+                    return
+                  }
+                  const parsed = parseInt(value)
+                  if (!isNaN(parsed)) {
+                    setMaxResult(parsed)
+                  }
+                }}
                 disabled={isSubmitting}
                 className="h-11 rounded-xl"
               />

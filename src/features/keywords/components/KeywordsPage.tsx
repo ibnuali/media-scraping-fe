@@ -1,14 +1,25 @@
+import { useNavigate } from "react-router-dom"
 import { useQueryClient } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
-import { useKeywords, useCreateKeyword, useUpdateKeyword, useDeleteKeyword } from "../hooks/use-keywords"
+import {
+  useKeywords,
+  useCreateKeyword,
+  useUpdateKeyword,
+  useDeleteKeyword,
+} from "../hooks/use-keywords"
 import { useKeywordDialog } from "../hooks/use-keyword-dialog"
 import { KeywordsSection } from "./KeywordsSection"
 import { KeywordFormModal } from "./KeywordFormModal"
 import { useAsyncScrape } from "@/hooks/use-async-scrape"
-import type { KeywordCreate, KeywordUpdate, KeywordResponse } from "@/types/keyword"
+import type {
+  KeywordCreate,
+  KeywordUpdate,
+  KeywordResponse,
+} from "@/types/keyword"
 
 export function KeywordsPage() {
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { data: keywords, isLoading, error } = useKeywords()
   const createMutation = useCreateKeyword()
@@ -31,7 +42,9 @@ export function KeywordsPage() {
 
   const { getJob, isPolling, startAsyncScrape } = useAsyncScrape({
     onComplete: (_job, keywordId) => {
-      queryClient.invalidateQueries({ queryKey: ["keywords", keywordId, "news"] })
+      queryClient.invalidateQueries({
+        queryKey: ["keywords", keywordId, "news"],
+      })
       queryClient.invalidateQueries({ queryKey: ["keywords"] })
     },
   })
@@ -40,10 +53,23 @@ export function KeywordsPage() {
     e.preventDefault()
     setFormError("")
 
+    if (!keyword.trim()) {
+      setFormError("Keyword is required")
+      return
+    }
+
+    if (maxResult < 1 || maxResult > 100) {
+      setFormError("Max Results must be between 1 and 100")
+      return
+    }
+
     try {
       if (dialogMode === "create") {
         const data: KeywordCreate = { keyword, max_result: maxResult }
-        await createMutation.mutateAsync(data)
+        const created = await createMutation.mutateAsync(data)
+        closeDialog()
+        navigate(`/keywords/${created.id}`)
+        return
       } else if (dialogMode === "edit" && editingKeyword) {
         const data: KeywordUpdate = { keyword, max_result: maxResult }
         await updateMutation.mutateAsync({ id: editingKeyword.id, data })
@@ -70,23 +96,7 @@ export function KeywordsPage() {
   const isSubmitting = createMutation.isPending || updateMutation.isPending
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Keywords</h1>
-          <p className="mt-1 text-muted-foreground">
-            Manage your tracked keywords and trigger scrapes
-          </p>
-        </div>
-        <Button
-          onClick={openCreateDialog}
-          className="h-11 rounded-xl font-medium shadow-lg shadow-primary/25 transition-all hover:shadow-xl hover:shadow-primary/30"
-        >
-          <Plus className="size-5" />
-          Add Keyword
-        </Button>
-      </div>
-
+    <div className="space-y-6">
       <KeywordsSection
         keywords={keywords}
         isLoading={isLoading}
@@ -98,6 +108,15 @@ export function KeywordsPage() {
         onScrape={handleScrape}
         isDeleting={deleteMutation.isPending}
       />
+
+      {/* Floating Action Button */}
+      <Button
+        onClick={openCreateDialog}
+        size="icon"
+        className="fixed right-6 bottom-6 z-40 size-14 rounded-full shadow-lg shadow-primary/25 transition-all hover:scale-105 hover:shadow-xl hover:shadow-primary/30"
+      >
+        <Plus className="size-6" />
+      </Button>
 
       <KeywordFormModal
         open={dialogMode !== null}

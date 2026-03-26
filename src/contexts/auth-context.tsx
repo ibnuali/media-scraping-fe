@@ -1,7 +1,18 @@
-import { createContext, useContext, type ReactNode } from 'react'
-import { useUser, useLogin, useRegister, useLogout } from '@/features/auth'
-import { getAccessToken } from '@/lib/api'
-import type { UserResponse } from '@/types/auth'
+import { createContext, useContext, type ReactNode } from "react"
+import {
+  useUser,
+  useLogin,
+  useRegister,
+  useLogout,
+  useUpdateProfile,
+  useChangePassword,
+} from "@/features/auth"
+import { getAccessToken } from "@/lib/api"
+import type {
+  UserResponse,
+  UserProfileUpdate,
+  PasswordChange,
+} from "@/types/auth"
 
 interface AuthContextType {
   user: UserResponse | null | undefined
@@ -16,6 +27,8 @@ interface AuthContextType {
     email?: string
   }) => Promise<void>
   logout: () => Promise<void>
+  updateProfile: (data: UserProfileUpdate) => Promise<void>
+  changePassword: (data: PasswordChange) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -25,6 +38,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loginMutation = useLogin()
   const registerMutation = useRegister()
   const logoutMutation = useLogout()
+  const updateProfileMutation = useUpdateProfile()
+  const changePasswordMutation = useChangePassword()
 
   const login = async (username: string, password: string) => {
     await loginMutation.mutateAsync({ username, password })
@@ -44,6 +59,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await logoutMutation.mutateAsync()
   }
 
+  const updateProfile = async (data: UserProfileUpdate) => {
+    await updateProfileMutation.mutateAsync(data)
+  }
+
+  const changePassword = async (data: PasswordChange) => {
+    await changePasswordMutation.mutateAsync(data)
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -53,6 +76,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         register,
         logout,
+        updateProfile,
+        changePassword,
       }}
     >
       {children}
@@ -63,7 +88,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext)
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider')
+    throw new Error("useAuth must be used within an AuthProvider")
   }
   return context
 }

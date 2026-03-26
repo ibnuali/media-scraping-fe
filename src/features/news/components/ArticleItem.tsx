@@ -7,7 +7,7 @@ interface ArticleItemProps {
 
 export function ArticleItem({ article }: ArticleItemProps) {
   return (
-    <article className="group rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm p-6 hover-lift transition-all">
+    <article className="group hover-lift rounded-2xl border border-border/50 bg-card/50 p-6 backdrop-blur-sm transition-all">
       <a
         href={article.url}
         target="_blank"
@@ -15,15 +15,15 @@ export function ArticleItem({ article }: ArticleItemProps) {
         className="block"
       >
         <div className="flex items-start gap-4">
-          <div className="hidden sm:flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary shrink-0">
+          <div className="hidden size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary sm:flex">
             <Globe className="size-5" />
           </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-lg group-hover:text-primary transition-colors line-clamp-2">
+          <div className="min-w-0 flex-1">
+            <h3 className="line-clamp-2 text-lg font-semibold transition-colors group-hover:text-primary">
               {article.title || article.url}
             </h3>
             {article.summary && (
-              <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+              <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
                 {article.summary}
               </p>
             )}
@@ -34,7 +34,7 @@ export function ArticleItem({ article }: ArticleItemProps) {
               </div>
             )}
           </div>
-          <ExternalLink className="size-5 text-muted-foreground/0 group-hover:text-muted-foreground transition-all shrink-0 mt-1" />
+          <ExternalLink className="mt-1 size-5 shrink-0 text-muted-foreground/0 transition-all group-hover:text-muted-foreground" />
         </div>
       </a>
     </article>

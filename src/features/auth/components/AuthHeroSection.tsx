@@ -18,10 +18,13 @@ export function AuthHeroSection({
   features,
 }: AuthHeroSectionProps) {
   return (
-    <div className="hidden w-1/2 bg-primary lg:flex lg:flex-col lg:justify-between lg:p-12 relative overflow-hidden">
+    <div className="relative hidden w-1/2 overflow-hidden bg-primary lg:flex lg:flex-col lg:justify-between lg:p-12">
       <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-20 left-20 w-72 h-72 bg-white/20 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-float" style={{ animationDelay: "-3s" }} />
+        <div className="animate-float absolute top-20 left-20 h-72 w-72 rounded-full bg-white/20 blur-3xl" />
+        <div
+          className="animate-float absolute right-20 bottom-20 h-96 w-96 rounded-full bg-white/10 blur-3xl"
+          style={{ animationDelay: "-3s" }}
+        />
       </div>
 
       <div className="relative z-10">
@@ -40,13 +43,12 @@ export function AuthHeroSection({
             <span>{badge}</span>
           </div>
         )}
-        <h1 className="text-5xl font-bold leading-tight text-white">
-          {title}<br />
+        <h1 className="text-5xl leading-tight font-bold text-white">
+          {title}
+          <br />
           {titleAccent && <span className="text-white/80">{titleAccent}</span>}
         </h1>
-        <p className="mt-6 text-lg text-white/70 max-w-md">
-          {description}
-        </p>
+        <p className="mt-6 max-w-md text-lg text-white/70">{description}</p>
 
         {showStats && (
           <div className="mt-10 flex items-center gap-6">
@@ -65,10 +67,23 @@ export function AuthHeroSection({
         {features && features.length > 0 && (
           <div className="mt-10 space-y-4">
             {features.map((feature, index) => (
-              <div key={index} className="flex items-center gap-3 text-white/90">
+              <div
+                key={index}
+                className="flex items-center gap-3 text-white/90"
+              >
                 <div className="flex size-8 items-center justify-center rounded-full bg-white/20">
-                  <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  <svg
+                    className="size-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                 </div>
                 <span>{feature}</span>

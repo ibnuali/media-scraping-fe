@@ -1,6 +1,10 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { authApi, setTokens, clearTokens, getAccessToken } from '@/lib/api'
-import type { UserResponse } from '@/types/auth'
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { authApi, setTokens, clearTokens, getAccessToken } from "@/lib/api"
+import type {
+  UserResponse,
+  UserProfileUpdate,
+  PasswordChange,
+} from "@/types/auth"
 
 interface RegisterData {
   username: string
@@ -12,7 +16,7 @@ interface RegisterData {
 
 export function useUser() {
   return useQuery<UserResponse | null>({
-    queryKey: ['user'],
+    queryKey: ["user"],
     queryFn: async () => {
       const token = getAccessToken()
       if (!token) return null
@@ -25,11 +29,16 @@ export function useUser() {
 export function useLogin() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ username, password }: { username: string; password: string }) =>
-      authApi.login(username, password),
-    onSuccess: (tokens) => {
+    mutationFn: ({
+      username,
+      password,
+    }: {
+      username: string
+      password: string
+    }) => authApi.login(username, password),
+    onSuccess: async (tokens) => {
       setTokens(tokens)
-      queryClient.invalidateQueries({ queryKey: ['user'] })
+      await queryClient.refetchQueries({ queryKey: ["user"] })
     },
   })
 }
@@ -38,9 +47,9 @@ export function useRegister() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (data: RegisterData) => authApi.register(data),
-    onSuccess: (tokens) => {
+    onSuccess: async (tokens) => {
       setTokens(tokens)
-      queryClient.invalidateQueries({ queryKey: ['user'] })
+      await queryClient.refetchQueries({ queryKey: ["user"] })
     },
   })
 }
@@ -51,8 +60,24 @@ export function useLogout() {
     mutationFn: authApi.logout,
     onSuccess: () => {
       clearTokens()
-      queryClient.setQueryData(['user'], null)
+      queryClient.setQueryData(["user"], null)
       queryClient.clear()
     },
+  })
+}
+
+export function useUpdateProfile() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: UserProfileUpdate) => authApi.updateProfile(data),
+    onSuccess: (updatedUser) => {
+      queryClient.setQueryData(["user"], updatedUser)
+    },
+  })
+}
+
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: (data: PasswordChange) => authApi.changePassword(data),
   })
 }

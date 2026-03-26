@@ -29,7 +29,9 @@ function getCSSVarColor(varName: string): string {
 }
 
 function truncateKeyword(keyword: string, maxLength = 14) {
-  return keyword.length > maxLength ? `${keyword.slice(0, maxLength)}...` : keyword
+  return keyword.length > maxLength
+    ? `${keyword.slice(0, maxLength)}...`
+    : keyword
 }
 
 export function TopKeywordsChart({ data }: TopKeywordsChartProps) {
@@ -67,7 +69,7 @@ export function TopKeywordsChart({ data }: TopKeywordsChartProps) {
             tickLine={false}
             tick={{ fill: mutedColor, fontSize: 12 }}
             allowDecimals={false}
-            domain={[0, 'auto']}
+            domain={[0, "auto"]}
           />
           <YAxis
             dataKey="keyword"
@@ -80,7 +82,11 @@ export function TopKeywordsChart({ data }: TopKeywordsChartProps) {
           />
           <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={24}>
             {topData.map((_, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} fillOpacity={0.85} />
+              <Cell
+                key={`cell-${index}`}
+                fill={COLORS[index % COLORS.length]}
+                fillOpacity={0.85}
+              />
             ))}
             <LabelList
               dataKey="count"

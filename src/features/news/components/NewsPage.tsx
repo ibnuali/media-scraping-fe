@@ -7,7 +7,11 @@ import { ArticleList } from "./ArticleList"
 export function NewsPage() {
   const { keywordId } = useParams<{ keywordId: string }>()
   const navigate = useNavigate()
-  const { data: news, isLoading, error } = useNews(keywordId ?? null, !!keywordId)
+  const {
+    data: news,
+    isLoading,
+    error,
+  } = useNews(keywordId ?? null, !!keywordId)
   const items = news?.items ?? []
 
   return (
@@ -39,11 +43,13 @@ export function NewsPage() {
         </div>
       ) : items.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border bg-card/30 p-16 text-center">
-          <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-muted/50 mb-4">
+          <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-2xl bg-muted/50">
             <Newspaper className="size-8 text-muted-foreground/50" />
           </div>
           <h3 className="text-lg font-semibold">No news articles found</h3>
-          <p className="text-muted-foreground mt-1">Try triggering a scrape first</p>
+          <p className="mt-1 text-muted-foreground">
+            Try triggering a scrape first
+          </p>
         </div>
       ) : (
         <ArticleList articles={items} />

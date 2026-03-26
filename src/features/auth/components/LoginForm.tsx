@@ -21,8 +21,8 @@ export function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
   }
 
   return (
-    <div className="flex flex-1 flex-col justify-center p-8 sm:p-12 lg:p-16 relative">
-      <div className="mx-auto w-full max-w-sm relative z-10">
+    <div className="relative flex flex-1 flex-col justify-center p-8 sm:p-12 lg:p-16">
+      <div className="relative z-10 mx-auto w-full max-w-sm">
         <div className="mb-8 flex items-center gap-2 lg:hidden">
           <div className="flex size-10 items-center justify-center rounded-xl bg-primary">
             <KeyRound className="size-5 text-primary-foreground" />
@@ -31,7 +31,9 @@ export function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
         </div>
 
         <h2 className="text-3xl font-bold tracking-tight">Welcome back</h2>
-        <p className="mt-2 text-muted-foreground">Enter your credentials to sign in</p>
+        <p className="mt-2 text-muted-foreground">
+          Enter your credentials to sign in
+        </p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-5">
           {error && (
@@ -40,7 +42,9 @@ export function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
             </div>
           )}
           <div className="space-y-2">
-            <Label htmlFor="username" className="text-sm font-medium">Username</Label>
+            <Label htmlFor="username" className="text-sm font-medium">
+              Username
+            </Label>
             <Input
               id="username"
               type="text"
@@ -54,7 +58,9 @@ export function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-sm font-medium">Password</Label>
+            <Label htmlFor="password" className="text-sm font-medium">
+              Password
+            </Label>
             <Input
               id="password"
               type="password"
@@ -88,7 +94,10 @@ export function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
 
         <p className="mt-8 text-center text-sm text-muted-foreground">
           Don&apos;t have an account?{" "}
-          <Link to="/register" className="font-semibold text-primary hover:underline">
+          <Link
+            to="/register"
+            className="font-semibold text-primary hover:underline"
+          >
             Create one
           </Link>
         </p>

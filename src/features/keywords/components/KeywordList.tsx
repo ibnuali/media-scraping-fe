@@ -22,7 +22,7 @@ export function KeywordList({
   isDeleting,
 }: KeywordListProps) {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="space-y-2">
       {keywords.map((kw) => (
         <KeywordCard
           key={kw.id}

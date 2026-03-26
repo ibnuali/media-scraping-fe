@@ -3,6 +3,7 @@ import { Loader2 } from "lucide-react"
 import { KeywordsStatsCards } from "./KeywordsStatsCards"
 import { KeywordList } from "./KeywordList"
 import { KeywordsEmptyState } from "./KeywordsEmptyState"
+import { useKeywordStats } from "../hooks/use-keywords"
 import type { KeywordResponse } from "@/types/keyword"
 import type { ScrapeJob } from "@/hooks/use-async-scrape"
 
@@ -29,6 +30,8 @@ export function KeywordsSection({
   onScrape,
   isDeleting,
 }: KeywordsSectionProps) {
+  const { data: stats } = useKeywordStats()
+
   const activeScrapeCount = useMemo(() => {
     let count = 0
     keywords?.forEach((kw) => {
@@ -39,8 +42,6 @@ export function KeywordsSection({
     })
     return count
   }, [keywords, getJob])
-
-  const maxResultsTotal = keywords?.reduce((acc, kw) => acc + kw.max_result, 0) ?? 0
 
   if (isLoading) {
     return (
@@ -66,8 +67,7 @@ export function KeywordsSection({
     <>
       <KeywordsStatsCards
         totalKeywords={keywords.length}
-        activeScrapeCount={activeScrapeCount}
-        maxResultsTotal={maxResultsTotal}
+        totalNews={stats?.total_news ?? 0}
       />
       <KeywordList
         keywords={keywords}
