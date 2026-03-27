@@ -95,10 +95,9 @@ export function useDeleteKeyword() {
 }
 
 export function useSummarizeKeyword() {
-  const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (id: string) => keywordsApi.summarize(id),
-    onSuccess: (data) => {
+    onSuccess: () => {
       // Don't invalidate immediately - the summary is generated in background
       // The WebSocket will notify when complete
       toast.success("Generating summary...", {

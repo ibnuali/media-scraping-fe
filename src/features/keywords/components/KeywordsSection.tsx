@@ -1,4 +1,3 @@
-import { useMemo } from "react"
 import { Loader2 } from "lucide-react"
 import { KeywordsStatsCards } from "./KeywordsStatsCards"
 import { KeywordList } from "./KeywordList"
@@ -31,17 +30,6 @@ export function KeywordsSection({
   isDeleting,
 }: KeywordsSectionProps) {
   const { data: stats } = useKeywordStats()
-
-  const activeScrapeCount = useMemo(() => {
-    let count = 0
-    keywords?.forEach((kw) => {
-      const job = getJob(kw.id)
-      if (job?.status === "pending" || job?.status === "running") {
-        count++
-      }
-    })
-    return count
-  }, [keywords, getJob])
 
   if (isLoading) {
     return (

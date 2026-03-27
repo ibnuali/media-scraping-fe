@@ -8,7 +8,6 @@ import {
   Cell,
   LabelList,
 } from "recharts"
-import { useTheme } from "@/components/theme-provider"
 
 interface TopKeywordData {
   keyword: string
@@ -36,7 +35,6 @@ function truncateKeyword(keyword: string, maxLength = 14) {
 
 export function TopKeywordsChart({ data }: TopKeywordsChartProps) {
   const topData = data.slice(0, 5)
-  const { theme } = useTheme()
 
   // Force re-render colors when theme changes
   const foregroundColor = getCSSVarColor("--foreground")

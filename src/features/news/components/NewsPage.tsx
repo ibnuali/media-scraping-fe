@@ -12,7 +12,8 @@ export function NewsPage() {
     isLoading,
     error,
   } = useNews(keywordId ?? null, !!keywordId)
-  const items = news?.items ?? []
+  const items = news?.pages.flatMap((p) => p.items) ?? []
+  const total = news?.pages[0]?.total ?? 0
 
   return (
     <div className="space-y-8">
@@ -28,7 +29,7 @@ export function NewsPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">News Articles</h1>
           <p className="text-muted-foreground">
-            {news?.total ?? 0} article{news?.total !== 1 ? "s" : ""} found
+            {total} article{total !== 1 ? "s" : ""} found
           </p>
         </div>
       </div>

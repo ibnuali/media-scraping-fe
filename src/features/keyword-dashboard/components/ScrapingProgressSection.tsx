@@ -211,7 +211,7 @@ export function ScrapingProgressSection({
               progress={scrapeJob?.progress}
               error={
                 isFailed && index === currentStageIndex
-                  ? scrapeJob?.error
+                  ? scrapeJob?.error ?? undefined
                   : undefined
               }
             />

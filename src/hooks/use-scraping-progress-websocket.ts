@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from "react"
+import { useEffect, useRef } from "react"
 import { getAccessToken, getWebSocketUrl } from "@/lib/api"
 
 // Scraping progress event types
@@ -70,7 +70,8 @@ function handleMessage(event: MessageEvent) {
       return
     }
 
-    const { job_id, event: progressEvent, data } = message
+    const { job_id, event: progressEvent, data } =
+      message as ScrapingProgressMessage
     console.log("[ScrapingProgress]", progressEvent, { job_id, data })
 
     // Track keyword_id from data
@@ -197,11 +198,13 @@ function handleMessage(event: MessageEvent) {
     // Ensure state is always set
     if (state) {
       jobStates.set(job_id, state)
-      console.log(
-        "[ScrapingProgress] State updated:",
-        state.status,
-        state.stage
-      )
+      if (state.stage) {
+        console.log(
+          "[ScrapingProgress] State updated:",
+          state.status,
+          state.stage
+        )
+      }
 
       // Notify callbacks
       progressCallbacks.forEach((cb) => cb(job_id, state!))
