@@ -1,4 +1,4 @@
-import { KeyRound, Sparkles } from "lucide-react"
+import { Sparkles } from "lucide-react"
 import keycrawlLogo from "/icon.png"
 interface AuthHeroSectionProps {
   badge?: string

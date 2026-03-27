@@ -1,8 +1,6 @@
-import { useEffect } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
-import { KeyRound, SearchCode, Newspaper, Zap, Loader2 } from "lucide-react"
-import { useAuth } from "@/contexts/auth-context"
+import { KeyRound, SearchCode, Newspaper, Zap } from "lucide-react"
 
 export function LandingPage() {
   return (
