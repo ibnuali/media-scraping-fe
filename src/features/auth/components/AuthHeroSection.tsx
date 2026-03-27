@@ -1,5 +1,5 @@
 import { KeyRound, Sparkles } from "lucide-react"
-
+import keycrawlLogo from "/icon.png"
 interface AuthHeroSectionProps {
   badge?: string
   title: string
@@ -30,7 +30,11 @@ export function AuthHeroSection({
       <div className="relative z-10">
         <div className="flex items-center gap-3">
           <div className="flex size-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
-            <KeyRound className="size-6 text-white" />
+            <img
+              src={keycrawlLogo}
+              alt="KeyCrawl"
+              className="size-6 text-white"
+            />
           </div>
           <span className="text-2xl font-bold text-white">KeyCrawl</span>
         </div>

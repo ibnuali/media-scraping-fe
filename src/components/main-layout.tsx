@@ -42,7 +42,7 @@ export function useHeader() {
 
 // Page header configuration for static routes
 const pageHeaders: Record<string, { title: string; description: string }> = {
-  "/": {
+  "/keywords": {
     title: "",
     description: "",
   },
@@ -88,10 +88,10 @@ export function MainLayout() {
   }
 
   const handleBack = () => {
-    navigate("/")
+    navigate("/keywords")
   }
 
-  const navItems = [{ to: "/", label: "Keywords", icon: SearchCode }]
+  const navItems = [{ to: "/keywords", label: "Keywords", icon: SearchCode }]
 
   const headerContextValue: HeaderContextType = {
     setTitle: setDynamicTitle,
@@ -262,7 +262,7 @@ export function MainLayout() {
                   </Button>
                   <div className="flex-1 overflow-hidden">
                     <p className="truncate text-sm font-semibold">
-                      {user?.username}
+                      @{user?.username}
                     </p>
                     <p className="truncate text-xs text-muted-foreground">
                       {user?.email || "Logged in"}

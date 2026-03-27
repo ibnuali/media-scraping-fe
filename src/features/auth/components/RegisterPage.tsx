@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "@/contexts/auth-context"
-import { AuthHeroSection } from "./AuthHeroSection"
 import { RegisterForm } from "./RegisterForm"
-import { Loader2 } from "lucide-react"
+import { Loader2, KeyRound } from "lucide-react"
 
 export function RegisterPage() {
   const [error, setError] = useState("")
@@ -11,14 +10,12 @@ export function RegisterPage() {
   const { register, isAuthenticated, isLoading } = useAuth()
   const navigate = useNavigate()
 
-  // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/", { replace: true })
+      navigate("/keywords", { replace: true })
     }
   }, [isAuthenticated, navigate])
 
-  // Show loading while checking auth status
   if (isLoading || isAuthenticated) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -39,7 +36,7 @@ export function RegisterPage() {
 
     try {
       await register(data)
-      navigate("/")
+      navigate("/keywords")
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed")
     } finally {
@@ -48,24 +45,21 @@ export function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-screen">
-      <AuthHeroSection
-        badge="Start tracking today"
-        title="Start tracking"
-        titleAccent="today."
-        description="Create an account to manage keywords and scrape news articles automatically. Get started in minutes."
-        showStats={false}
-        features={[
-          "Unlimited keyword tracking",
-          "Real-time news scraping",
-          "Background job processing",
-        ]}
-      />
-      <RegisterForm
-        onSubmit={handleRegister}
-        isLoading={isLoadingForm}
-        error={error}
-      />
+    <div className="flex min-h-screen items-center justify-center bg-muted/30 p-4">
+      <div className="w-full max-w-md space-y-6">
+        <div className="flex items-center justify-center gap-3">
+          <div className="flex size-10 items-center justify-center rounded-xl bg-primary">
+            <KeyRound className="size-5 text-primary-foreground" />
+          </div>
+          <span className="text-2xl font-bold">KeyCrawl</span>
+        </div>
+
+        <RegisterForm
+          onSubmit={handleRegister}
+          isLoading={isLoadingForm}
+          error={error}
+        />
+      </div>
     </div>
   )
 }

@@ -3,7 +3,8 @@ import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { KeyRound, Loader2, ArrowRight } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Loader2, Eye, EyeOff } from "lucide-react"
 
 interface LoginFormProps {
   onSubmit: (username: string, password: string) => Promise<void>
@@ -14,6 +15,7 @@ interface LoginFormProps {
 export function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -21,87 +23,80 @@ export function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
   }
 
   return (
-    <div className="relative flex flex-1 flex-col justify-center p-8 sm:p-12 lg:p-16">
-      <div className="relative z-10 mx-auto w-full max-w-sm">
-        <div className="mb-8 flex items-center gap-2 lg:hidden">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-primary">
-            <KeyRound className="size-5 text-primary-foreground" />
-          </div>
-          <span className="text-xl font-bold text-primary">KeyCrawl</span>
-        </div>
-
-        <h2 className="text-3xl font-bold tracking-tight">Welcome back</h2>
-        <p className="mt-2 text-muted-foreground">
-          Enter your credentials to sign in
+    <Card>
+      <CardHeader className="space-y-1 pb-4">
+        <CardTitle className="text-xl">Sign in</CardTitle>
+        <p className="text-sm text-muted-foreground">
+          Enter your credentials to continue
         </p>
-
-        <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="rounded-xl border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive backdrop-blur-sm">
+            <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
               {error}
             </div>
           )}
           <div className="space-y-2">
-            <Label htmlFor="username" className="text-sm font-medium">
-              Username
-            </Label>
+            <Label htmlFor="username">Username</Label>
             <Input
               id="username"
               type="text"
-              placeholder="Enter your username"
+              placeholder="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
               disabled={isLoading}
               autoComplete="username"
-              className="h-12 rounded-xl border-border/50 bg-background/50 backdrop-blur-sm transition-all focus:border-primary focus:ring-primary/20"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-sm font-medium">
-              Password
-            </Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              disabled={isLoading}
-              autoComplete="current-password"
-              className="h-12 rounded-xl border-border/50 bg-background/50 backdrop-blur-sm transition-all focus:border-primary focus:ring-primary/20"
-            />
+            <Label htmlFor="password">Password</Label>
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                disabled={isLoading}
+                autoComplete="current-password"
+                className="pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                tabIndex={-1}
+              >
+                {showPassword ? (
+                  <EyeOff className="size-4" />
+                ) : (
+                  <Eye className="size-4" />
+                )}
+              </button>
+            </div>
           </div>
-          <Button
-            type="submit"
-            className="h-12 w-full rounded-xl font-medium shadow-lg shadow-primary/25 transition-all hover:shadow-xl hover:shadow-primary/30"
-            disabled={isLoading}
-          >
+          <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? (
               <>
                 <Loader2 className="size-4 animate-spin" />
                 Signing in...
               </>
             ) : (
-              <>
-                Sign in
-                <ArrowRight className="ml-2 size-4" />
-              </>
+              "Sign in"
             )}
           </Button>
         </form>
 
-        <p className="mt-8 text-center text-sm text-muted-foreground">
+        <p className="mt-4 text-center text-sm text-muted-foreground">
           Don&apos;t have an account?{" "}
-          <Link
-            to="/register"
-            className="font-semibold text-primary hover:underline"
-          >
-            Create one
+          <Link to="/register" className="text-primary hover:underline">
+            Request Account
           </Link>
         </p>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   )
 }

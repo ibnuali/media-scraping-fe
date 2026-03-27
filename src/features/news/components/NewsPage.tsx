@@ -21,7 +21,7 @@ export function NewsPage() {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/keywords")}
           className="rounded-xl"
         >
           <ArrowLeft className="size-5" />
