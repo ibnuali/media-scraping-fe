@@ -1,0 +1,39 @@
+# Dependencies
+node_modules
+bun.lock
+
+# Build output
+dist
+
+# Development
+.env
+.env.*
+!.env.example
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Documentation
+README.md
+CLAUDE.md
+*.md
+
+# Tests
+coverage
+.nyc_output
+
+# Misc
+.DS_Store
+Thumbs.db
