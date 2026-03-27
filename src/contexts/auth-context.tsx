@@ -18,6 +18,7 @@ interface AuthContextType {
   user: UserResponse | null | undefined
   isLoading: boolean
   isAuthenticated: boolean
+  isActive: boolean
   login: (username: string, password: string) => Promise<void>
   register: (data: {
     username: string
@@ -73,6 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         isLoading: isLoading && !!getAccessToken(),
         isAuthenticated: !!user,
+        isActive: user?.is_active ?? false,
         login,
         register,
         logout,

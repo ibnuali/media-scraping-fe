@@ -12,6 +12,7 @@ import {
   SearchCode,
   ArrowLeft,
   User,
+  AlertTriangle,
 } from "lucide-react"
 import { useState, createContext, useContext } from "react"
 import {
@@ -23,6 +24,7 @@ import { NotificationBell } from "@/features/notifications"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useNotificationWebSocket } from "@/hooks/use-notification-websocket"
 import { showNotificationToast } from "@/features/notifications/hooks/use-notifications"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 // Header context for child pages to set custom header content
 type HeaderContextType = {
@@ -53,7 +55,7 @@ const pageHeaders: Record<string, { title: string; description: string }> = {
 }
 
 export function MainLayout() {
-  const { user, logout } = useAuth()
+  const { user, logout, isActive } = useAuth()
   const { collapsed, setCollapsed } = useSidebar()
   const navigate = useNavigate()
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -341,6 +343,18 @@ export function MainLayout() {
               <NotificationBell />
             </div>
           </header>
+
+          {/* Inactive user banner */}
+          {user && !isActive && (
+            <div className="bg-background px-8 py-4">
+              <Alert variant="destructive">
+                <AlertTriangle className="size-4" />
+                <AlertDescription>
+                  Account pending activation. Some features are restricted.
+                </AlertDescription>
+              </Alert>
+            </div>
+          )}
 
           {/* Page content */}
           <main className="relative flex-1 overflow-y-auto bg-background p-4 lg:p-8">
