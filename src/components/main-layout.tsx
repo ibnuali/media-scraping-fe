@@ -351,6 +351,7 @@ export function MainLayout() {
                 <AlertTriangle className="size-4" />
                 <AlertDescription>
                   Account pending activation. Some features are restricted.
+                  please send a request to email mail@ibnua.li
                 </AlertDescription>
               </Alert>
             </div>
