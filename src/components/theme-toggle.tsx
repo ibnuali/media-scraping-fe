@@ -21,11 +21,11 @@ export function ThemeToggle() {
       variant="ghost"
       size="icon"
       onClick={cycleTheme}
-      className="relative size-9 rounded-xl hover:bg-muted/50"
+      className="relative size-8 rounded-md hover:bg-muted"
     >
       <Sun
         className={cn(
-          "size-5 transition-all duration-300",
+          "size-4 transition-all duration-200",
           theme === "light"
             ? "scale-100 rotate-0 text-amber-500"
             : "absolute scale-0 rotate-90"
@@ -33,7 +33,7 @@ export function ThemeToggle() {
       />
       <Moon
         className={cn(
-          "size-5 transition-all duration-300",
+          "size-4 transition-all duration-200",
           theme === "dark"
             ? "scale-100 rotate-0 text-blue-400"
             : "absolute scale-0 -rotate-90"
@@ -41,7 +41,7 @@ export function ThemeToggle() {
       />
       <Monitor
         className={cn(
-          "size-5 transition-all duration-300",
+          "size-4 transition-all duration-200",
           theme === "system"
             ? "scale-100 rotate-0 text-primary"
             : "absolute scale-0"

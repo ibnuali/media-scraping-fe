@@ -18,66 +18,58 @@ export function AuthHeroSection({
   features,
 }: AuthHeroSectionProps) {
   return (
-    <div className="relative hidden w-1/2 overflow-hidden bg-primary lg:flex lg:flex-col lg:justify-between lg:p-12">
-      <div className="absolute inset-0 opacity-30">
-        <div className="animate-float absolute top-20 left-20 h-72 w-72 rounded-full bg-white/20 blur-3xl" />
-        <div
-          className="animate-float absolute right-20 bottom-20 h-96 w-96 rounded-full bg-white/10 blur-3xl"
-          style={{ animationDelay: "-3s" }}
-        />
-      </div>
-
-      <div className="relative z-10">
+    <div className="hidden w-1/2 border-r border-border bg-card lg:flex lg:flex-col lg:justify-between lg:p-8">
+      <div>
         <div className="flex items-center gap-3">
-          <div className="flex size-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
+          <div className="flex size-10 items-center justify-center rounded-md bg-primary">
             <img
               src={keycrawlLogo}
               alt="KeyCrawl"
-              className="size-6 text-white"
+              className="size-5 text-primary-foreground"
             />
           </div>
-          <span className="text-2xl font-bold text-white">KeyCrawl</span>
+          <span className="text-xl font-bold text-foreground">KeyCrawl</span>
         </div>
       </div>
 
-      <div className="relative z-10">
+      <div>
         {badge && (
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm text-white/80 backdrop-blur-sm">
-            <Sparkles className="size-4" />
+          <div className="mb-4 inline-flex items-center gap-2 rounded-md border border-border bg-muted px-3 py-1.5 text-sm text-muted-foreground">
+            <Sparkles className="size-3.5" />
             <span>{badge}</span>
           </div>
         )}
-        <h1 className="text-5xl leading-tight font-bold text-white">
+        <h1 className="text-3xl leading-tight font-bold text-foreground">
           {title}
           <br />
-          {titleAccent && <span className="text-white/80">{titleAccent}</span>}
+          {titleAccent && <span className="text-muted-foreground">{titleAccent}</span>}
         </h1>
-        <p className="mt-6 max-w-md text-lg text-white/70">{description}</p>
+        <p className="mt-4 max-w-md text-sm text-muted-foreground">{description}</p>
 
         {showStats && (
-          <div className="mt-10 flex items-center gap-6">
+          <div className="mt-6 flex items-center gap-4">
             <div className="text-center">
-              <div className="text-3xl font-bold text-white">10K+</div>
-              <div className="text-sm text-white/60">Keywords tracked</div>
+              <div className="font-mono text-2xl font-bold text-foreground">10K+</div>
+              <div className="text-xs text-muted-foreground">Keywords tracked</div>
             </div>
-            <div className="h-12 w-px bg-white/20" />
+            <div className="h-10 w-px bg-border" />
             <div className="text-center">
-              <div className="text-3xl font-bold text-white">50K+</div>
-              <div className="text-sm text-white/60">Articles scraped</div>
+              <div className="font-mono text-2xl font-bold text-foreground">50K+</div>
+              <div className="text-xs text-muted-foreground">Articles scraped</div>
             </div>
           </div>
         )}
 
         {features && features.length > 0 && (
-          <div className="mt-10 space-y-4">
+          <div className="mt-6 space-y-3">
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="flex items-center gap-3 text-white/90"
+                className="flex items-center gap-3 text-foreground"
               >
-                <div className="flex size-8 items-center justify-center rounded-full bg-white/20">
+                <div className="flex size-7 items-center justify-center rounded-md border border-border bg-muted">
                   <svg
-                    className="size-4"
+                    className="size-3.5"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -90,14 +82,14 @@ export function AuthHeroSection({
                     />
                   </svg>
                 </div>
-                <span>{feature}</span>
+                <span className="text-sm">{feature}</span>
               </div>
             ))}
           </div>
         )}
       </div>
 
-      <div className="relative z-10 text-sm text-white/50">
+      <div className="text-xs text-muted-foreground">
         &copy; {new Date().getFullYear()} KeyCrawl. All rights reserved.
       </div>
     </div>

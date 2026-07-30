@@ -11,16 +11,16 @@ export function KeywordFrequencyList({ keywords }: KeywordFrequencyListProps) {
   if (keywords.length === 0) return null
 
   return (
-    <div className="rounded-2xl border border-border/50 bg-card/50 p-6 backdrop-blur-sm">
-      <h2 className="mb-4 text-lg font-semibold">Keyword Frequency</h2>
+    <div className="rounded-md border border-border bg-card p-4">
+      <h2 className="mb-3 text-lg font-semibold">Keyword Frequency</h2>
       <div className="flex flex-wrap gap-2">
         {keywords.map((kw, index) => (
           <div
             key={index}
-            className="flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2"
+            className="flex items-center gap-2 rounded-md border border-border bg-background px-3 py-1.5"
           >
             <span className="font-medium">{kw.keyword}</span>
-            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+            <span className="rounded-md bg-primary/10 px-1.5 py-0.5 font-mono text-xs font-medium text-primary">
               {kw.count}
             </span>
           </div>

@@ -45,12 +45,12 @@ export function useHeader() {
 // Page header configuration for static routes
 const pageHeaders: Record<string, { title: string; description: string }> = {
   "/keywords": {
-    title: "",
-    description: "",
+    title: "Keywords",
+    description: "Manage your tracked keywords",
   },
   "/profile": {
     title: "Profile",
-    description: "Manage your account settings and preferences",
+    description: "Manage your account settings",
   },
 }
 
@@ -102,11 +102,11 @@ export function MainLayout() {
 
   return (
     <HeaderContext.Provider value={headerContextValue}>
-      <div className="liquid-gradient flex min-h-screen bg-background">
+      <div className="flex min-h-screen bg-background">
         {/* Mobile sidebar backdrop */}
         {sidebarOpen && (
           <div
-            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
+            className="fixed inset-0 z-40 bg-black/60 lg:hidden"
             onClick={() => setSidebarOpen(false)}
           />
         )}
@@ -114,89 +114,110 @@ export function MainLayout() {
         {/* Sidebar */}
         <aside
           className={cn(
-            "glass-sidebar fixed inset-y-0 left-0 z-50 transform border-r border-border/50 transition-all duration-300 ease-in-out lg:translate-x-0",
+            "fixed inset-y-0 left-0 z-50 flex flex-col border-r border-border bg-sidebar transition-[width] duration-200 lg:translate-x-0",
             sidebarOpen ? "translate-x-0" : "-translate-x-full",
-            collapsed ? "w-20" : "w-72"
+            collapsed ? "w-16" : "w-60"
           )}
         >
-          <div className="flex h-full flex-col">
-            {/* Logo */}
+          {/* Logo */}
+          <div
+            className={cn(
+              "flex h-12 items-center border-b border-border transition-all duration-200",
+              collapsed ? "justify-center px-2" : "justify-between px-4"
+            )}
+          >
             <div
               className={cn(
-                "flex h-16 items-center border-b border-border/50 transition-all duration-300",
-                collapsed ? "justify-center px-2" : "justify-between px-6"
+                "flex items-center",
+                collapsed ? "justify-center" : "gap-2.5"
               )}
             >
-              <div
-                className={cn(
-                  "flex items-center",
-                  collapsed ? "justify-center" : "gap-3"
-                )}
-              >
-                <div className="flex size-10 items-center justify-center rounded-xl bg-primary shadow-lg shadow-primary/25">
-                  <KeyRound className="size-5 text-primary-foreground" />
-                </div>
-                {!collapsed && (
-                  <span className="text-xl font-bold text-primary">
-                    KeyCrawl
-                  </span>
-                )}
+              <div className="flex size-8 items-center justify-center rounded-md bg-primary">
+                <KeyRound className="size-4 text-primary-foreground" />
               </div>
               {!collapsed && (
-                <Button
-                  variant="ghost"
-                  size="icon-xs"
-                  className="lg:hidden"
-                  onClick={() => setSidebarOpen(false)}
-                >
-                  <X className="size-4" />
-                </Button>
+                <span className="text-sm font-semibold tracking-tight text-foreground">
+                  KeyCrawl
+                </span>
               )}
             </div>
+            {!collapsed && (
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                className="lg:hidden"
+                onClick={() => setSidebarOpen(false)}
+              >
+                <X className="size-4" />
+              </Button>
+            )}
+          </div>
 
-            {/* Navigation */}
-            <nav className="flex-1 space-y-1 p-4">
-              {!collapsed && (
-                <div className="mb-2 px-3 text-xs font-semibold tracking-wider text-muted-foreground/60 uppercase">
-                  Navigation
-                </div>
-              )}
-              {navItems.map((item) => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  onClick={() => setSidebarOpen(false)}
-                  className={({ isActive }) =>
-                    cn(
-                      "flex items-center gap-3 rounded-xl text-sm font-medium transition-all duration-200",
-                      collapsed ? "justify-center px-3 py-3" : "px-3 py-2.5",
-                      isActive
-                        ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
-                        : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                    )
-                  }
-                >
-                  {collapsed ? (
-                    <Tooltip>
-                      <TooltipTrigger
-                        render={<item.icon className="size-5" />}
-                      ></TooltipTrigger>
-                      <TooltipContent side="right">{item.label}</TooltipContent>
-                    </Tooltip>
-                  ) : (
-                    <>
-                      <item.icon className="size-5" />
-                      {item.label}
-                    </>
-                  )}
-                </NavLink>
-              ))}
-            </nav>
+          {/* Navigation */}
+          <nav className="flex-1 space-y-0.5 p-3">
+            {!collapsed && (
+              <div className="mb-1.5 px-2 text-[10px] font-medium tracking-widest text-muted-foreground/60 uppercase">
+                Navigation
+              </div>
+            )}
+            {navItems.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                onClick={() => setSidebarOpen(false)}
+                className={({ isActive }) =>
+                  cn(
+                    "flex items-center gap-2.5 rounded-md text-[13px] font-medium transition-colors duration-150",
+                    collapsed ? "justify-center px-2 py-2" : "px-2.5 py-2",
+                    isActive
+                      ? "bg-primary/15 text-primary"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )
+                }
+              >
+                {collapsed ? (
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={<item.icon className="size-4" />}
+                    ></TooltipTrigger>
+                    <TooltipContent side="right">{item.label}</TooltipContent>
+                  </Tooltip>
+                ) : (
+                  <>
+                    <item.icon className="size-4" />
+                    {item.label}
+                  </>
+                )}
+              </NavLink>
+            ))}
+          </nav>
 
-            {/* User section */}
-            <div className="border-t border-border/50 p-4">
-              {collapsed ? (
-                <div className="flex flex-col items-center gap-3">
+          {/* User section */}
+          <div className="border-t border-border p-3">
+            {collapsed ? (
+              <div className="flex flex-col items-center gap-2">
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <Button
+                        variant="ghost"
+                        size="icon-xs"
+                        onClick={() => navigate("/profile")}
+                        className="flex size-8 items-center justify-center rounded-md bg-primary text-xs font-bold text-primary-foreground"
+                      >
+                        {user?.username?.charAt(0).toUpperCase() || "U"}
+                      </Button>
+                    }
+                  />
+
+                  <TooltipContent side="right">
+                    <p className="font-medium">{user?.username}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {user?.email || "Logged in"}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+                <div className="flex items-center gap-0.5">
                   <Tooltip>
                     <TooltipTrigger
                       render={
@@ -204,122 +225,99 @@ export function MainLayout() {
                           variant="ghost"
                           size="icon-xs"
                           onClick={() => navigate("/profile")}
-                          className="flex size-10 items-center justify-center rounded-xl bg-primary text-sm font-bold text-primary-foreground shadow-lg shadow-primary/25"
+                          className="text-muted-foreground hover:text-foreground"
                         >
-                          {user?.username?.charAt(0).toUpperCase() || "U"}
+                          <User className="size-3.5" />
+                        </Button>
+                      }
+                    />
+                    <TooltipContent side="right">Profile</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
+                        <Button
+                          variant="ghost"
+                          size="icon-xs"
+                          onClick={handleLogout}
+                          className="text-muted-foreground hover:text-destructive"
+                        >
+                          <LogOut className="size-3.5" />
                         </Button>
                       }
                     />
 
-                    <TooltipContent side="right">
-                      <p className="font-semibold">{user?.username}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {user?.email || "Logged in"}
-                      </p>
-                    </TooltipContent>
+                    <TooltipContent side="right">Logout</TooltipContent>
                   </Tooltip>
-                  <div className="flex items-center gap-1">
-                    <Tooltip>
-                      <TooltipTrigger
-                        render={
-                          <Button
-                            variant="ghost"
-                            size="icon-xs"
-                            onClick={() => navigate("/profile")}
-                            className="text-muted-foreground hover:text-foreground"
-                          >
-                            <User className="size-4" />
-                          </Button>
-                        }
-                      />
-                      <TooltipContent side="right">Profile</TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                      <TooltipTrigger
-                        render={
-                          <Button
-                            variant="ghost"
-                            size="icon-xs"
-                            onClick={handleLogout}
-                            className="text-muted-foreground hover:text-destructive"
-                          >
-                            <LogOut className="size-4" />
-                          </Button>
-                        }
-                      />
-
-                      <TooltipContent side="right">Logout</TooltipContent>
-                    </Tooltip>
-                  </div>
                 </div>
-              ) : (
-                <div className="glass-card flex items-center gap-3 rounded-xl p-3">
+              </div>
+            ) : (
+              <div className="flex items-center gap-2.5 rounded-md border border-border bg-sidebar p-2">
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  onClick={() => navigate("/profile")}
+                  className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary text-xs font-bold text-primary-foreground hover:bg-primary/90"
+                >
+                  {user?.username?.charAt(0).toUpperCase() || "U"}
+                </Button>
+                <div className="flex-1 overflow-hidden">
+                  <p className="truncate text-[13px] font-medium">
+                    @{user?.username}
+                  </p>
+                  <p className="truncate text-[11px] text-muted-foreground">
+                    {user?.email || "Logged in"}
+                  </p>
+                </div>
+                <div className="flex items-center gap-0.5">
                   <Button
                     variant="ghost"
                     size="icon-xs"
                     onClick={() => navigate("/profile")}
-                    className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary text-sm font-bold text-primary-foreground shadow-lg shadow-primary/25 hover:bg-primary/90"
+                    title="Profile"
+                    className="text-muted-foreground hover:text-foreground"
                   >
-                    {user?.username?.charAt(0).toUpperCase() || "U"}
+                    <User className="size-3.5" />
                   </Button>
-                  <div className="flex-1 overflow-hidden">
-                    <p className="truncate text-sm font-semibold">
-                      @{user?.username}
-                    </p>
-                    <p className="truncate text-xs text-muted-foreground">
-                      {user?.email || "Logged in"}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon-xs"
-                      onClick={() => navigate("/profile")}
-                      title="Profile"
-                      className="text-muted-foreground hover:text-foreground"
-                    >
-                      <User className="size-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon-xs"
-                      onClick={handleLogout}
-                      title="Logout"
-                      className="text-muted-foreground hover:text-destructive"
-                    >
-                      <LogOut className="size-4" />
-                    </Button>
-                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon-xs"
+                    onClick={handleLogout}
+                    title="Logout"
+                    className="text-muted-foreground hover:text-destructive"
+                  >
+                    <LogOut className="size-3.5" />
+                  </Button>
                 </div>
-              )}
-            </div>
-
-            {/* Collapse toggle button - desktop only */}
-            <Button
-              variant="ghost"
-              size="icon-xs"
-              onClick={() => setCollapsed(!collapsed)}
-              className="absolute top-20 -right-3 z-50 hidden size-6 rounded-full border border-border bg-background shadow-md hover:bg-muted lg:flex"
-            >
-              {collapsed ? (
-                <ChevronRight className="size-3" />
-              ) : (
-                <ChevronLeft className="size-3" />
-              )}
-            </Button>
+              </div>
+            )}
           </div>
+
+          {/* Collapse toggle button - desktop only */}
+          <Button
+            variant="ghost"
+            size="icon-xs"
+            onClick={() => setCollapsed(!collapsed)}
+            className="absolute top-14 -right-3 z-50 hidden size-6 rounded-full border border-border bg-background hover:bg-muted lg:flex"
+          >
+            {collapsed ? (
+              <ChevronRight className="size-3" />
+            ) : (
+              <ChevronLeft className="size-3" />
+            )}
+          </Button>
         </aside>
 
         {/* Main content */}
         <div
           className={cn(
-            "flex min-w-0 flex-1 flex-col transition-all duration-300",
-            collapsed ? "lg:ml-20" : "lg:ml-72"
+            "flex min-w-0 flex-1 flex-col transition-[margin] duration-200",
+            collapsed ? "lg:ml-16" : "lg:ml-60"
           )}
         >
           {/* Header */}
-          <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-4 border-b border-border/50 bg-background px-4 lg:px-6">
-            <div className="flex min-w-0 items-center gap-3">
+          <header className="sticky top-0 z-30 flex h-11 items-center justify-between gap-3 border-b border-border bg-background px-4 lg:px-6">
+            <div className="flex min-w-0 items-center gap-2">
               {isDetailPage && (
                 <Button variant="ghost" size="icon-xs" onClick={handleBack}>
                   <ArrowLeft className="size-4" />
@@ -327,18 +325,18 @@ export function MainLayout() {
               )}
               {title && (
                 <div className="min-w-0">
-                  <h1 className="truncate text-lg font-semibold tracking-tight">
+                  <h1 className="truncate text-sm font-semibold tracking-tight">
                     {title}
                   </h1>
                   {description && (
-                    <p className="truncate text-sm text-muted-foreground">
+                    <p className="truncate text-xs text-muted-foreground">
                       {description}
                     </p>
                   )}
                 </div>
               )}
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-0.5">
               <ThemeToggle />
               <NotificationBell />
             </div>
@@ -346,10 +344,10 @@ export function MainLayout() {
 
           {/* Inactive user banner */}
           {user && !isActive && (
-            <div className="bg-background px-8 py-4">
+            <div className="border-b border-border bg-background px-4 py-3 lg:px-6">
               <Alert variant="destructive">
                 <AlertTriangle className="size-4" />
-                <AlertDescription>
+                <AlertDescription className="text-xs">
                   Account pending activation. Some features are restricted.
                   please send a request to email mail@ibnua.li
                 </AlertDescription>
@@ -358,7 +356,7 @@ export function MainLayout() {
           )}
 
           {/* Page content */}
-          <main className="relative flex-1 overflow-y-auto bg-background p-4 lg:p-8">
+          <main className="relative flex-1 overflow-y-auto bg-background p-4 lg:p-6">
             <Outlet />
           </main>
         </div>

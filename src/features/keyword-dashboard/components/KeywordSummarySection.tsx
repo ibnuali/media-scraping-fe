@@ -16,8 +16,8 @@ export function KeywordSummarySection({
   const hasSummary = !!keyword.keyword_summary
 
   return (
-    <div className="rounded-2xl border border-border/50 bg-card/50 p-6 backdrop-blur-sm">
-      <div className="mb-4 flex items-center justify-between">
+    <div className="rounded-md border border-border bg-card p-4">
+      <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <FileText className="size-5 text-muted-foreground" />
           <h2 className="text-lg font-semibold">Keyword Summary</h2>
@@ -61,7 +61,7 @@ export function KeywordSummarySection({
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center py-8 text-center">
-          <FileText className="mb-3 size-12 text-muted-foreground/50" />
+          <FileText className="mb-3 size-10 text-muted-foreground/50" />
           <p className="text-sm text-muted-foreground">
             No summary available yet.
           </p>

@@ -50,7 +50,6 @@ export function KeywordDashboardPage() {
   // Async scrape hook for tracking progress
   const { getJob, startAsyncScrape, isPolling } = useAsyncScrape({
     onComplete: () => {
-      // Invalidate analytics when scraping completes
       queryClient.invalidateQueries({
         queryKey: ["keywords", keywordId, "analytics"],
       })
@@ -111,7 +110,7 @@ export function KeywordDashboardPage() {
 
   if (!keyword) {
     return (
-      <div className="rounded-2xl border border-destructive/20 bg-destructive/10 p-8 text-center text-destructive">
+      <div className="rounded-md border border-destructive/20 bg-destructive/10 p-6 text-center text-destructive">
         Keyword not found
       </div>
     )
@@ -124,7 +123,7 @@ export function KeywordDashboardPage() {
     })) ?? []
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Scrape action bar */}
       <div className="flex items-center justify-between">
         <div>
@@ -173,9 +172,9 @@ export function KeywordDashboardPage() {
         onRegenerate={handleRegenerateSummary}
       />
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl border border-border/50 bg-card/50 p-6 backdrop-blur-sm">
-          <h2 className="mb-4 text-lg font-semibold">Sentiment Distribution</h2>
+      <div className="grid gap-3 lg:grid-cols-2">
+        <div className="rounded-md border border-border bg-card p-4">
+          <h2 className="mb-3 text-lg font-semibold">Sentiment Distribution</h2>
           <SentimentChart
             positive={analytics?.sentiment?.positive ?? 0}
             negative={analytics?.sentiment?.negative ?? 0}
@@ -183,8 +182,8 @@ export function KeywordDashboardPage() {
           />
         </div>
 
-        <div className="rounded-2xl border border-border/50 bg-card/50 p-6 backdrop-blur-sm">
-          <h2 className="mb-4 text-lg font-semibold">Top Matched Keywords</h2>
+        <div className="rounded-md border border-border bg-card p-4">
+          <h2 className="mb-3 text-lg font-semibold">Top Matched Keywords</h2>
           <TopKeywordsChart data={topKeywordsData} />
         </div>
       </div>

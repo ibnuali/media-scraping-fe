@@ -7,7 +7,7 @@ interface ArticleListProps {
 
 export function ArticleList({ articles }: ArticleListProps) {
   return (
-    <div className="grid gap-4">
+    <div className="grid gap-2">
       {articles.map((article) => (
         <ArticleItem key={article.id} article={article} />
       ))}

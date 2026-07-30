@@ -22,7 +22,7 @@ export function KeywordList({
   isDeleting,
 }: KeywordListProps) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-1.5">
       {keywords.map((kw) => (
         <KeywordCard
           key={kw.id}

@@ -29,7 +29,7 @@ function SentimentBadge({ sentiment }: { sentiment: NewsItem["sentiment"] }) {
 
   return (
     <span
-      className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium capitalize ${colors[sentiment]}`}
+      className={`inline-flex rounded-md px-2 py-0.5 text-xs font-medium capitalize ${colors[sentiment]}`}
     >
       {sentiment}
     </span>
@@ -67,8 +67,8 @@ export function NewsTable({
 
   if (articles.length === 0) {
     return (
-      <div className="rounded-2xl border border-border/50 bg-card/50 p-6 backdrop-blur-sm">
-        <h2 className="mb-4 text-lg font-semibold">Recent News</h2>
+      <div className="rounded-md border border-border bg-card p-4">
+        <h2 className="mb-3 text-lg font-semibold">Recent News</h2>
         <p className="py-8 text-center text-muted-foreground">
           No news articles found for this keyword.
         </p>
@@ -77,8 +77,8 @@ export function NewsTable({
   }
 
   return (
-    <div className="rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm">
-      <div className="p-6 pb-4">
+    <div className="rounded-md border border-border bg-card">
+      <div className="p-4 pb-3">
         <h2 className="text-lg font-semibold">Recent News</h2>
       </div>
       <Table>
@@ -96,7 +96,7 @@ export function NewsTable({
               key={article.id}
               ref={index === articles.length - 1 ? lastElementRef : undefined}
             >
-              <TableCell className="text-sm text-muted-foreground">
+              <TableCell className="font-mono text-sm text-muted-foreground">
                 {article.published_at
                   ? new Date(article.published_at).toLocaleDateString()
                   : "—"}

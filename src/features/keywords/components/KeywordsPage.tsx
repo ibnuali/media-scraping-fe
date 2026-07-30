@@ -96,7 +96,7 @@ export function KeywordsPage() {
   const isSubmitting = createMutation.isPending || updateMutation.isPending
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <KeywordsSection
         keywords={keywords}
         isLoading={isLoading}
@@ -113,9 +113,9 @@ export function KeywordsPage() {
       <Button
         onClick={openCreateDialog}
         size="icon"
-        className="fixed right-6 bottom-6 z-40 size-14 rounded-full shadow-lg shadow-primary/25 transition-all hover:scale-105 hover:shadow-xl hover:shadow-primary/30"
+        className="fixed right-4 bottom-4 z-40 size-12 rounded-full transition-all hover:scale-105"
       >
-        <Plus className="size-6" />
+        <Plus className="size-5" />
       </Button>
 
       <KeywordFormModal

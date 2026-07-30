@@ -55,16 +55,16 @@ export function RegisterForm({
 
   return (
     <Card>
-      <CardHeader className="space-y-1 pb-4">
-        <CardTitle className="text-xl">Request Account</CardTitle>
+      <CardHeader className="space-y-1 pb-3">
+        <CardTitle className="text-lg">Request Account</CardTitle>
         <p className="text-sm text-muted-foreground">
           Fill in your details to get started
         </p>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3">
           {displayError && (
-            <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+            <div className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
               {displayError}
             </div>
           )}
@@ -187,7 +187,7 @@ export function RegisterForm({
           </Button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-muted-foreground">
+        <p className="mt-3 text-center text-sm text-muted-foreground">
           Already have an account?{" "}
           <Link to="/login" className="text-primary hover:underline">
             Sign in

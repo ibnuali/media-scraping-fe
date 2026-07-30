@@ -7,15 +7,15 @@ interface ArticleItemProps {
 
 export function ArticleItem({ article }: ArticleItemProps) {
   return (
-    <article className="group hover-lift rounded-2xl border border-border/50 bg-card/50 p-6 backdrop-blur-sm transition-all">
+    <article className="rounded-md border border-border bg-card p-4 transition-colors hover:border-primary/30">
       <a
         href={article.url}
         target="_blank"
         rel="noopener noreferrer"
         className="block"
       >
-        <div className="flex items-start gap-4">
-          <div className="hidden size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary sm:flex">
+        <div className="flex items-start gap-3">
+          <div className="hidden size-10 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary sm:flex">
             <Globe className="size-5" />
           </div>
           <div className="min-w-0 flex-1">
@@ -23,12 +23,12 @@ export function ArticleItem({ article }: ArticleItemProps) {
               {article.title || article.url}
             </h3>
             {article.summary && (
-              <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
+              <p className="mt-1.5 line-clamp-2 text-sm text-muted-foreground">
                 {article.summary}
               </p>
             )}
             {article.scraped_at && (
-              <div className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
+              <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
                 <Clock className="size-3.5" />
                 Scraped: {new Date(article.scraped_at).toLocaleDateString()}
               </div>

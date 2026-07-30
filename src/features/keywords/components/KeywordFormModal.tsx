@@ -39,9 +39,9 @@ export function KeywordFormModal({
 }: KeywordFormModalProps) {
   return (
     <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="rounded-2xl">
+      <DialogContent className="rounded-md">
         <DialogHeader>
-          <DialogTitle className="text-xl">
+          <DialogTitle className="text-lg">
             {mode === "create" ? "Add Keyword" : "Edit Keyword"}
           </DialogTitle>
           <DialogDescription>
@@ -51,9 +51,9 @@ export function KeywordFormModal({
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={onSubmit}>
-          <div className="space-y-4 py-4">
+          <div className="space-y-3 py-3">
             {formError && (
-              <div className="rounded-xl border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">
+              <div className="rounded-md border border-destructive/20 bg-destructive/10 p-2 text-sm text-destructive">
                 {formError}
               </div>
             )}
@@ -67,7 +67,7 @@ export function KeywordFormModal({
                 onChange={(e) => setKeyword(e.target.value)}
                 required
                 disabled={isSubmitting}
-                className="h-11 rounded-xl"
+                className="h-10 rounded-md"
               />
             </div>
             <div className="space-y-2">
@@ -91,7 +91,7 @@ export function KeywordFormModal({
                   }
                 }}
                 disabled={isSubmitting}
-                className="h-11 rounded-xl"
+                className="h-10 rounded-md"
               />
             </div>
           </div>
@@ -101,14 +101,14 @@ export function KeywordFormModal({
               variant="outline"
               onClick={onClose}
               disabled={isSubmitting}
-              className="rounded-xl"
+              className="rounded-md"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="rounded-xl"
+              className="rounded-md"
             >
               {isSubmitting ? "Saving..." : "Save"}
             </Button>

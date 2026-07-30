@@ -82,7 +82,7 @@ function StageItem({
     <div className="flex items-start gap-3">
       {/* Icon */}
       <div
-        className={`flex size-8 shrink-0 items-center justify-center rounded-full transition-colors ${
+        className={`flex size-8 shrink-0 items-center justify-center rounded-md transition-colors ${
           isCompleted || isDone
             ? "bg-green-500/20 text-green-500"
             : isCurrent
@@ -115,12 +115,12 @@ function StageItem({
           </p>
           {/* Progress indicator for current stage */}
           {isCurrent && progress && stage.id === "scraping" && (
-            <span className="text-xs text-muted-foreground">
+            <span className="font-mono text-xs text-muted-foreground">
               {progress.current}/{progress.total}
             </span>
           )}
           {isCurrent && progress && stage.id === "analyzing" && (
-            <span className="text-xs text-muted-foreground">
+            <span className="font-mono text-xs text-muted-foreground">
               {progress.current}/{progress.total}
             </span>
           )}
@@ -154,8 +154,8 @@ export function ScrapingProgressSection({
     : 0
 
   return (
-    <div className="rounded-2xl border border-border/50 bg-card/50 p-6 backdrop-blur-sm">
-      <div className="mb-4 flex items-center justify-between">
+    <div className="rounded-md border border-border bg-card p-4">
+      <div className="mb-3 flex items-center justify-between">
         <h2 className="text-lg font-semibold">Scraping Progress</h2>
         {isRunning && (
           <span className="flex items-center gap-1.5 text-sm text-primary">
@@ -179,7 +179,7 @@ export function ScrapingProgressSection({
 
       {/* Progress bar */}
       {(isRunning || isCompleted) && scrapeJob?.progress && (
-        <div className="mb-6">
+        <div className="mb-4">
           <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
             <div
               className={`h-full transition-all duration-300 ${
@@ -188,7 +188,7 @@ export function ScrapingProgressSection({
               style={{ width: `${progressPercent}%` }}
             />
           </div>
-          <p className="mt-1.5 text-right text-xs text-muted-foreground">
+          <p className="mt-1.5 text-right font-mono text-xs text-muted-foreground">
             {scrapeJob.progress.current} of {scrapeJob.progress.total} pages
             processed
           </p>
@@ -220,7 +220,7 @@ export function ScrapingProgressSection({
 
         {/* Failed state */}
         {isFailed && scrapeJob?.error && (
-          <div className="mt-4 rounded-lg border border-destructive/20 bg-destructive/10 p-3">
+          <div className="mt-4 rounded-md border border-destructive/20 bg-destructive/10 p-3">
             <p className="text-sm font-medium text-destructive">Error</p>
             <p className="mt-1 text-xs text-destructive/80">
               {scrapeJob.error}

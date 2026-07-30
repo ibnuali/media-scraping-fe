@@ -33,15 +33,15 @@ export function KeywordsSection({
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="size-6 animate-spin text-muted-foreground" />
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="rounded-2xl border border-destructive/20 bg-destructive/10 p-8 text-center text-destructive">
+      <div className="rounded-md border border-destructive/20 bg-destructive/10 p-6 text-center text-destructive">
         Failed to load keywords
       </div>
     )

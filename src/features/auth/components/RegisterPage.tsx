@@ -45,13 +45,13 @@ export function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/30 p-4">
-      <div className="w-full max-w-md space-y-6">
+    <div className="flex min-h-screen items-center justify-center bg-background p-4">
+      <div className="w-full max-w-md space-y-4">
         <div className="flex items-center justify-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-primary">
+          <div className="flex size-10 items-center justify-center rounded-md bg-primary">
             <KeyRound className="size-5 text-primary-foreground" />
           </div>
-          <span className="text-2xl font-bold">KeyCrawl</span>
+          <span className="text-xl font-bold">KeyCrawl</span>
         </div>
 
         <RegisterForm

@@ -18,7 +18,13 @@ interface TopKeywordsChartProps {
   data: TopKeywordData[]
 }
 
-const COLORS = ["#3b82f6", "#8b5cf6", "#06b6d4", "#10b981", "#f59e0b"]
+const COLORS = [
+  "oklch(0.65 0.18 265)",
+  "oklch(0.65 0.18 300)",
+  "oklch(0.65 0.18 200)",
+  "oklch(0.65 0.18 160)",
+  "oklch(0.65 0.18 80)",
+]
 
 function getCSSVarColor(varName: string): string {
   if (typeof window === "undefined") return "#000"
@@ -78,7 +84,7 @@ export function TopKeywordsChart({ data }: TopKeywordsChartProps) {
             tickFormatter={(value) => truncateKeyword(value)}
             width={110}
           />
-          <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={24}>
+          <Bar dataKey="count" radius={[0, 4, 4, 0]} barSize={24}>
             {topData.map((_, index) => (
               <Cell
                 key={`cell-${index}`}

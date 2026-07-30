@@ -75,7 +75,7 @@ export function ProfilePage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="mx-auto max-w-2xl space-y-4">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Profile Settings</h1>
         <p className="text-muted-foreground">
@@ -103,7 +103,7 @@ export function ProfilePage() {
                 Username cannot be changed
               </p>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="firstName">First Name</Label>
                 <Input
@@ -163,7 +163,7 @@ export function ProfilePage() {
                 required
               />
             </div>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="newPassword">New Password</Label>
                 <Input

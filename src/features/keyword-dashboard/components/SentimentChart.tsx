@@ -29,11 +29,11 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
     const data = payload[0]
     const total = data.value
     return (
-      <div className="rounded-lg border border-border/50 bg-background/95 px-3 py-2 shadow-lg backdrop-blur-sm">
+      <div className="rounded-md border border-border bg-background/95 px-3 py-2">
         <p className="text-sm font-medium" style={{ color: data.payload.fill }}>
           {data.name}
         </p>
-        <p className="text-xs text-muted-foreground">{total} articles</p>
+        <p className="font-mono text-xs text-muted-foreground">{total} articles</p>
       </div>
     )
   }
@@ -95,7 +95,7 @@ export function SentimentChart({
 
         {/* Center text */}
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-3xl font-bold">{total}</span>
+          <span className="font-mono text-2xl font-bold">{total}</span>
           <span className="text-xs text-muted-foreground">Total</span>
         </div>
       </div>
@@ -110,7 +110,7 @@ export function SentimentChart({
             />
             <div className="flex flex-col">
               <span className="text-sm font-medium">{item.name}</span>
-              <span className="text-xs text-muted-foreground">
+              <span className="font-mono text-xs text-muted-foreground">
                 {item.value} ({getPercentage(item.value)}%)
               </span>
             </div>
