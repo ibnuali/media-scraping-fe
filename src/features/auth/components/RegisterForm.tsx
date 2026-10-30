@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Loader2, Eye, EyeOff } from "lucide-react"
+import { Loader2, Eye, EyeOff, AlertCircle } from "lucide-react"
 
 interface RegisterFormProps {
   onSubmit: (data: {
@@ -16,6 +16,50 @@ interface RegisterFormProps {
   }) => Promise<void>
   isLoading: boolean
   error: string
+}
+
+function PasswordInput({
+  id,
+  label,
+  value,
+  onChange,
+  disabled,
+}: {
+  id: string
+  label: string
+  value: string
+  onChange: (value: string) => void
+  disabled: boolean
+}) {
+  const [visible, setVisible] = useState(false)
+
+  return (
+    <div className="space-y-1.5">
+      <Label htmlFor={id}>{label}</Label>
+      <div className="relative">
+        <Input
+          id={id}
+          type={visible ? "text" : "password"}
+          placeholder="password"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          required
+          disabled={disabled}
+          autoComplete="new-password"
+          className="h-10 pr-10"
+        />
+        <button
+          type="button"
+          onClick={() => setVisible(!visible)}
+          aria-label={visible ? "Hide password" : "Show password"}
+          className="absolute top-1/2 right-3 -translate-y-1/2 text-ink-3 transition-colors hover:text-foreground focus-visible:text-foreground focus-visible:outline-none"
+          tabIndex={-1}
+        >
+          {visible ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+        </button>
+      </div>
+    </div>
+  )
 }
 
 export function RegisterForm({
@@ -30,8 +74,6 @@ export function RegisterForm({
   const [lastName, setLastName] = useState("")
   const [email, setEmail] = useState("")
   const [localError, setLocalError] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -54,21 +96,27 @@ export function RegisterForm({
   const displayError = localError || error
 
   return (
-    <Card>
-      <CardHeader className="space-y-1 pb-3">
-        <CardTitle className="text-lg">Request Account</CardTitle>
-        <p className="text-sm text-muted-foreground">
+    <Card className="rounded-lg">
+      <CardHeader className="space-y-1 border-b pb-3">
+        <CardTitle className="text-base font-semibold tracking-tight">
+          Request account
+        </CardTitle>
+        <p className="text-[13px] text-ink-2">
           Fill in your details to get started
         </p>
       </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-3">
+      <CardContent className="pt-1">
+        <form onSubmit={handleSubmit} className="space-y-3.5">
           {displayError && (
-            <div className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
-              {displayError}
+            <div
+              role="alert"
+              className="flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-2.5 text-[13px] text-destructive"
+            >
+              <AlertCircle className="mt-0.5 size-3.5 shrink-0" />
+              <span>{displayError}</span>
             </div>
           )}
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label htmlFor="username">Username</Label>
             <Input
               id="username"
@@ -79,10 +127,11 @@ export function RegisterForm({
               required
               disabled={isLoading}
               autoComplete="username"
+              className="h-10"
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label htmlFor="firstName">First name</Label>
               <Input
                 id="firstName"
@@ -92,9 +141,10 @@ export function RegisterForm({
                 onChange={(e) => setFirstName(e.target.value)}
                 disabled={isLoading}
                 autoComplete="given-name"
+                className="h-10"
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label htmlFor="lastName">Last name</Label>
               <Input
                 id="lastName"
@@ -104,10 +154,11 @@ export function RegisterForm({
                 onChange={(e) => setLastName(e.target.value)}
                 disabled={isLoading}
                 autoComplete="family-name"
+                className="h-10"
               />
             </div>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
@@ -117,79 +168,41 @@ export function RegisterForm({
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
               autoComplete="email"
+              className="h-10"
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <div className="relative">
-              <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                disabled={isLoading}
-                autoComplete="new-password"
-                className="pr-10"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                tabIndex={-1}
-              >
-                {showPassword ? (
-                  <EyeOff className="size-4" />
-                ) : (
-                  <Eye className="size-4" />
-                )}
-              </button>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm password</Label>
-            <div className="relative">
-              <Input
-                id="confirmPassword"
-                type={showConfirmPassword ? "text" : "password"}
-                placeholder="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                disabled={isLoading}
-                autoComplete="new-password"
-                className="pr-10"
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                tabIndex={-1}
-              >
-                {showConfirmPassword ? (
-                  <EyeOff className="size-4" />
-                ) : (
-                  <Eye className="size-4" />
-                )}
-              </button>
-            </div>
-          </div>
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <PasswordInput
+            id="password"
+            label="Password"
+            value={password}
+            onChange={setPassword}
+            disabled={isLoading}
+          />
+          <PasswordInput
+            id="confirmPassword"
+            label="Confirm password"
+            value={confirmPassword}
+            onChange={setConfirmPassword}
+            disabled={isLoading}
+          />
+          <Button type="submit" className="h-10 w-full" disabled={isLoading}>
             {isLoading ? (
               <>
                 <Loader2 className="size-4 animate-spin" />
-                Creating account...
+                Creating account…
               </>
             ) : (
-              "Request Account"
+              "Request account"
             )}
           </Button>
         </form>
 
-        <p className="mt-3 text-center text-sm text-muted-foreground">
+        <p className="mt-4 text-center text-[13px] text-ink-2">
           Already have an account?{" "}
-          <Link to="/login" className="text-primary hover:underline">
+          <Link
+            to="/login"
+            className="font-medium text-primary underline-offset-4 hover:underline"
+          >
             Sign in
           </Link>
         </p>

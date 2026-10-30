@@ -39,8 +39,20 @@ export class ApiError extends Error {
   }
 }
 
-// Refresh token if needed
+// Single-flight refresh: concurrent 401s share one attempt so a rotating
+// refresh token is only ever consumed once.
+let refreshPromise: Promise<string | null> | null = null
+
 async function refreshAccessToken(): Promise<string | null> {
+  if (!refreshPromise) {
+    refreshPromise = doRefreshAccessToken().finally(() => {
+      refreshPromise = null
+    })
+  }
+  return refreshPromise
+}
+
+async function doRefreshAccessToken(): Promise<string | null> {
   const refreshToken = getRefreshToken()
   if (!refreshToken) return null
 

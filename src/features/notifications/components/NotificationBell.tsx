@@ -5,7 +5,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { Badge } from "@/components/ui/badge"
 import { useUnreadCount, useMarkAllAsRead } from "../hooks/use-notifications"
 import { NotificationList } from "./NotificationList"
 
@@ -19,28 +18,34 @@ export function NotificationBell() {
     <Popover>
       <PopoverTrigger
         render={
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="h-5 w-5" />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative"
+            aria-label={
+              unreadCount > 0
+                ? `Notifications, ${unreadCount} unread`
+                : "Notifications"
+            }
+          >
+            <Bell className="size-4" />
             {unreadCount > 0 && (
-              <Badge
-                variant="destructive"
-                className="absolute -top-1 -right-1 h-5 min-w-5 justify-center rounded-full px-1.5 text-xs"
-              >
+              <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 font-mono text-[10px] font-medium tabular-nums text-white">
                 {unreadCount > 99 ? "99+" : unreadCount}
-              </Badge>
+              </span>
             )}
           </Button>
         }
       />
       <PopoverContent align="end" className="w-96 p-0">
-        {/* Header */}
-        <div className="flex items-center justify-between border-b px-4 py-3">
-          <h4 className="text-sm font-semibold">Notifications</h4>
+        <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
+          <h4 className="text-[13px] font-semibold tracking-tight">
+            Notifications
+          </h4>
           {unreadCount > 0 && (
             <Button
               variant="ghost"
-              size="sm"
-              className="h-auto px-2 py-1 text-xs"
+              size="xs"
               onClick={() => markAllAsRead.mutate()}
               disabled={markAllAsRead.isPending}
             >
@@ -49,7 +54,6 @@ export function NotificationBell() {
           )}
         </div>
 
-        {/* List */}
         <NotificationList />
       </PopoverContent>
     </Popover>

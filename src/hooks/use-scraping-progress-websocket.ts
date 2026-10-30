@@ -42,6 +42,9 @@ type CompletedCallback = (jobId: string, keywordId: string) => void
 // Module-level singleton state
 let wsInstance: WebSocket | null = null
 let connectionPromise: Promise<void> | null = null
+let reconnectTimer: ReturnType<typeof setTimeout> | null = null
+let reconnectAttempts = 0
+let manualClose = false
 const progressCallbacks = new Set<ProgressCallback>()
 const completedCallbacks = new Set<CompletedCallback>()
 
@@ -226,6 +229,17 @@ function handleMessage(event: MessageEvent) {
   }
 }
 
+function scheduleReconnect() {
+  if (manualClose || reconnectTimer) return
+  // Exponential backoff: 1s, 2s, 4s, ... capped at 30s.
+  const delay = Math.min(1000 * 2 ** reconnectAttempts, 30000)
+  reconnectAttempts += 1
+  reconnectTimer = setTimeout(() => {
+    reconnectTimer = null
+    connectWebSocket()
+  }, delay)
+}
+
 async function connectWebSocket() {
   if (wsInstance?.readyState === WebSocket.OPEN) {
     return
@@ -238,6 +252,8 @@ async function connectWebSocket() {
   const token = getAccessToken()
   if (!token) return
 
+  manualClose = false
+
   connectionPromise = new Promise((resolve) => {
     const wsUrl = getWebSocketUrl("/ws/scraping-progress")
     const url = `${wsUrl}?token=${encodeURIComponent(token)}`
@@ -248,6 +264,7 @@ async function connectWebSocket() {
 
     ws.onopen = () => {
       console.log("[ScrapingProgress] Connected")
+      reconnectAttempts = 0
       resolve()
     }
 
@@ -257,13 +274,14 @@ async function connectWebSocket() {
       console.log("[ScrapingProgress] Closed:", event.code)
       wsInstance = null
       connectionPromise = null
+      resolve()
+      scheduleReconnect()
     }
 
     ws.onerror = (err) => {
+      // A failed connection is always followed by onclose, which handles
+      // teardown and reconnect scheduling.
       console.error("[ScrapingProgress] Error:", err)
-      wsInstance = null
-      connectionPromise = null
-      resolve()
     }
   })
 
@@ -271,11 +289,17 @@ async function connectWebSocket() {
 }
 
 function disconnectWebSocket() {
+  manualClose = true
+  if (reconnectTimer) {
+    clearTimeout(reconnectTimer)
+    reconnectTimer = null
+  }
+  reconnectAttempts = 0
   if (wsInstance) {
     wsInstance.close()
     wsInstance = null
-    connectionPromise = null
   }
+  connectionPromise = null
 }
 
 export function getJobProgress(

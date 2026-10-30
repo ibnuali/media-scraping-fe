@@ -1,5 +1,7 @@
 import { useRef, useCallback } from "react"
-import { ExternalLink, Loader2 } from "lucide-react"
+import { ExternalLink, Loader2, Newspaper } from "lucide-react"
+import { Panel, PanelHead } from "@/components/panel"
+import { cn } from "@/lib/utils"
 import type { NewsItem } from "@/types/keyword"
 import {
   Table,
@@ -17,19 +19,21 @@ interface NewsTableProps {
   onLoadMore: () => void
 }
 
-function SentimentBadge({ sentiment }: { sentiment: NewsItem["sentiment"] }) {
-  if (!sentiment) return <span className="text-muted-foreground">—</span>
+const sentimentStyles = {
+  positive: "border-success/30 bg-success/10 text-success",
+  negative: "border-destructive/30 bg-destructive/10 text-destructive",
+  neutral: "border-border bg-muted text-ink-2",
+} as const
 
-  const colors = {
-    positive:
-      "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-    negative: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
-    neutral: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400",
-  }
+function SentimentBadge({ sentiment }: { sentiment: NewsItem["sentiment"] }) {
+  if (!sentiment) return <span className="text-ink-3">—</span>
 
   return (
     <span
-      className={`inline-flex rounded-md px-2 py-0.5 text-xs font-medium capitalize ${colors[sentiment]}`}
+      className={cn(
+        "inline-flex items-center rounded-sm border px-1.5 py-0.5 font-mono text-[11px] capitalize",
+        sentimentStyles[sentiment]
+      )}
     >
       {sentiment}
     </span>
@@ -67,26 +71,33 @@ export function NewsTable({
 
   if (articles.length === 0) {
     return (
-      <div className="rounded-md border border-border bg-card p-4">
-        <h2 className="mb-3 text-lg font-semibold">Recent News</h2>
-        <p className="py-8 text-center text-muted-foreground">
-          No news articles found for this keyword.
-        </p>
-      </div>
+      <Panel>
+        <PanelHead title="Recent news" hint="nothing scraped yet" />
+        <div className="flex flex-col items-center justify-center px-6 py-14 text-center">
+          <Newspaper className="mb-3 size-7 text-ink-3" />
+          <p className="text-[13px] text-ink-2">
+            No articles for this keyword yet
+          </p>
+          <p className="mt-1 font-mono text-[11px] text-ink-3">
+            run a scrape to pull the latest coverage
+          </p>
+        </div>
+      </Panel>
     )
   }
 
   return (
-    <div className="rounded-md border border-border bg-card">
-      <div className="p-4 pb-3">
-        <h2 className="text-lg font-semibold">Recent News</h2>
-      </div>
+    <Panel>
+      <PanelHead
+        title="Recent news"
+        hint={`${articles.length} loaded`}
+      />
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[140px]">Published Date</TableHead>
+            <TableHead className="w-[120px]">Published</TableHead>
             <TableHead className="w-[150px]">Source</TableHead>
-            <TableHead className="min-w-[300px]">Summary</TableHead>
+            <TableHead className="min-w-[280px]">Summary</TableHead>
             <TableHead className="w-[100px]">Sentiment</TableHead>
           </TableRow>
         </TableHeader>
@@ -96,7 +107,7 @@ export function NewsTable({
               key={article.id}
               ref={index === articles.length - 1 ? lastElementRef : undefined}
             >
-              <TableCell className="font-mono text-sm text-muted-foreground">
+              <TableCell className="font-mono text-xs tabular-nums text-ink-3">
                 {article.published_at
                   ? new Date(article.published_at).toLocaleDateString()
                   : "—"}
@@ -107,17 +118,17 @@ export function NewsTable({
                     href={article.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-sm font-medium hover:text-primary hover:underline"
+                    className="inline-flex items-center gap-1 text-[13px] font-medium text-foreground underline-offset-4 hover:text-primary hover:underline"
                   >
-                    {article.published_by}
-                    <ExternalLink className="size-3" />
+                    <span className="truncate">{article.published_by}</span>
+                    <ExternalLink className="size-3 shrink-0" />
                   </a>
                 ) : (
-                  <span className="text-muted-foreground">—</span>
+                  <span className="text-ink-3">—</span>
                 )}
               </TableCell>
               <TableCell>
-                <p className="text-sm">
+                <p className="line-clamp-2 text-[13px] text-ink-2">
                   {article.summary || article.title || article.url}
                 </p>
               </TableCell>
@@ -129,10 +140,10 @@ export function NewsTable({
         </TableBody>
       </Table>
       {isFetchingNextPage && (
-        <div className="flex items-center justify-center py-4">
-          <Loader2 className="size-5 animate-spin text-muted-foreground" />
+        <div className="flex items-center justify-center border-t border-border py-3">
+          <Loader2 className="size-4 animate-spin text-ink-3" />
         </div>
       )}
-    </div>
+    </Panel>
   )
 }

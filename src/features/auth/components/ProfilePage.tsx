@@ -3,13 +3,7 @@ import { useAuth } from "@/contexts/auth-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Panel, PanelBody, PanelHead } from "@/components/panel"
 import { toast } from "sonner"
 import { ApiError } from "@/lib/api"
 
@@ -28,7 +22,7 @@ export function ProfilePage() {
     setIsUpdatingProfile(true)
     try {
       await updateProfile({ first_name: firstName, last_name: lastName })
-      toast.success("Profile updated successfully")
+      toast.success("Profile updated")
     } catch (error) {
       if (error instanceof ApiError) {
         toast.error(error.message)
@@ -59,7 +53,7 @@ export function ProfilePage() {
         current_password: currentPassword,
         new_password: newPassword,
       })
-      toast.success("Password changed successfully")
+      toast.success("Password changed")
       setCurrentPassword("")
       setNewPassword("")
       setConfirmPassword("")
@@ -75,109 +69,102 @@ export function ProfilePage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Profile Settings</h1>
-        <p className="text-muted-foreground">
-          Manage your account settings and preferences
-        </p>
-      </div>
-
-      {/* Profile Information Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Profile Information</CardTitle>
-          <CardDescription>Update your personal information</CardDescription>
-        </CardHeader>
-        <CardContent>
+    <div className="mx-auto w-full max-w-2xl space-y-4">
+      <Panel>
+        <PanelHead title="Profile information" hint="name shown on your account" />
+        <PanelBody>
           <form onSubmit={handleProfileSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                value={user?.username || ""}
-                disabled
-                className="bg-muted"
-              />
-              <p className="text-xs text-muted-foreground">
-                Username cannot be changed
-              </p>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor="firstName">First name</Label>
                 <Input
                   id="firstName"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  placeholder="Enter your first name"
+                  placeholder="First name"
+                  className="h-10"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="lastName">Last name</Label>
                 <Input
                   id="lastName"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  placeholder="Enter your last name"
+                  placeholder="Last name"
+                  className="h-10"
                 />
               </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                value={user?.email || ""}
-                disabled
-                className="bg-muted"
-              />
-              <p className="text-xs text-muted-foreground">
-                Email cannot be changed
-              </p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  value={user?.username || ""}
+                  disabled
+                  className="h-10 font-mono text-[13px]"
+                />
+                <p className="font-mono text-[11px] text-ink-3">
+                  cannot be changed
+                </p>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  value={user?.email || ""}
+                  disabled
+                  className="h-10 font-mono text-[13px]"
+                />
+                <p className="font-mono text-[11px] text-ink-3">
+                  cannot be changed
+                </p>
+              </div>
             </div>
-            <Button type="submit" disabled={isUpdatingProfile}>
-              {isUpdatingProfile ? "Saving..." : "Save Changes"}
-            </Button>
+            <div className="flex justify-end border-t border-border pt-4">
+              <Button type="submit" disabled={isUpdatingProfile}>
+                {isUpdatingProfile ? "Saving…" : "Save changes"}
+              </Button>
+            </div>
           </form>
-        </CardContent>
-      </Card>
+        </PanelBody>
+      </Panel>
 
-      {/* Change Password Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Change Password</CardTitle>
-          <CardDescription>
-            Update your password to keep your account secure
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+      <Panel>
+        <PanelHead title="Password" hint="minimum 6 characters" />
+        <PanelBody>
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="currentPassword">Current Password</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="currentPassword">Current password</Label>
               <Input
                 id="currentPassword"
                 type="password"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                placeholder="Enter your current password"
+                placeholder="Current password"
                 required
+                autoComplete="current-password"
+                className="h-10"
               />
             </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="newPassword">New Password</Label>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor="newPassword">New password</Label>
                 <Input
                   id="newPassword"
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Enter new password"
+                  placeholder="New password"
                   required
                   minLength={6}
+                  autoComplete="new-password"
+                  className="h-10"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm New Password</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="confirmPassword">Confirm new password</Label>
                 <Input
                   id="confirmPassword"
                   type="password"
@@ -186,15 +173,19 @@ export function ProfilePage() {
                   placeholder="Confirm new password"
                   required
                   minLength={6}
+                  autoComplete="new-password"
+                  className="h-10"
                 />
               </div>
             </div>
-            <Button type="submit" disabled={isChangingPassword}>
-              {isChangingPassword ? "Changing..." : "Change Password"}
-            </Button>
+            <div className="flex justify-end border-t border-border pt-4">
+              <Button type="submit" disabled={isChangingPassword}>
+                {isChangingPassword ? "Changing…" : "Change password"}
+              </Button>
+            </div>
           </form>
-        </CardContent>
-      </Card>
+        </PanelBody>
+      </Panel>
     </div>
   )
 }

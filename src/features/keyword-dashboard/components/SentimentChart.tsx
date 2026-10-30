@@ -2,10 +2,10 @@ import { Minus } from "lucide-react"
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts"
 
 const SENTIMENT_COLORS = {
-  positive: "#10b981",
-  negative: "#ef4444",
-  neutral: "#64748b",
-}
+  positive: "var(--color-success)",
+  negative: "var(--color-destructive)",
+  neutral: "var(--color-ink-3)",
+} as const
 
 interface SentimentChartProps {
   positive: number
@@ -18,22 +18,21 @@ interface CustomTooltipProps {
   payload?: Array<{
     name: string
     value: number
-    payload: {
-      fill: string
-    }
+    payload: { fill: string }
   }>
 }
 
 function CustomTooltip({ active, payload }: CustomTooltipProps) {
   if (active && payload && payload.length) {
     const data = payload[0]
-    const total = data.value
     return (
-      <div className="rounded-md border border-border bg-background/95 px-3 py-2">
-        <p className="text-sm font-medium" style={{ color: data.payload.fill }}>
+      <div className="rounded-md border border-border bg-popover px-3 py-2">
+        <p className="text-[13px] font-medium" style={{ color: data.payload.fill }}>
           {data.name}
         </p>
-        <p className="font-mono text-xs text-muted-foreground">{total} articles</p>
+        <p className="font-mono text-[11px] tabular-nums text-ink-2">
+          {data.value} articles
+        </p>
       </div>
     )
   }
@@ -55,68 +54,68 @@ export function SentimentChart({
 
   if (total === 0) {
     return (
-      <div className="flex h-64 items-center justify-center text-muted-foreground">
+      <div className="flex h-64 items-center justify-center">
         <div className="text-center">
-          <Minus className="mx-auto mb-2 size-8" />
-          <p>No sentiment data available</p>
-          <p className="text-sm">Scrape some articles to see analytics</p>
+          <Minus className="mx-auto mb-2 size-7 text-ink-3" />
+          <p className="text-[13px] text-ink-2">No sentiment data yet</p>
+          <p className="mt-1 font-mono text-[11px] text-ink-3">
+            scrape some articles to see analytics
+          </p>
         </div>
       </div>
     )
   }
 
-  const getPercentage = (value: number) => ((value / total) * 100).toFixed(0)
+  const percentage = (value: number) => ((value / total) * 100).toFixed(0)
 
   return (
-    <div className="flex h-64 items-center justify-center">
+    <div className="flex h-64 items-center justify-center gap-8">
       <div className="relative">
-        <ResponsiveContainer width={200} height={200}>
+        <ResponsiveContainer width={180} height={180}>
           <PieChart>
             <Pie
               data={data}
               cx="50%"
               cy="50%"
-              innerRadius={65}
-              outerRadius={90}
+              innerRadius={58}
+              outerRadius={82}
               dataKey="value"
               stroke="none"
             >
-              {data.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={entry.fill}
-                  className="transition-opacity hover:opacity-80"
-                />
+              {data.map((entry) => (
+                <Cell key={entry.name} fill={entry.fill} />
               ))}
             </Pie>
             <Tooltip content={<CustomTooltip />} />
           </PieChart>
         </ResponsiveContainer>
 
-        {/* Center text */}
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-          <span className="font-mono text-2xl font-bold">{total}</span>
-          <span className="text-xs text-muted-foreground">Total</span>
+          <span className="font-mono text-2xl font-semibold tabular-nums">
+            {total}
+          </span>
+          <span className="font-mono text-[11px] text-ink-3">articles</span>
         </div>
       </div>
 
-      {/* Custom Legend */}
-      <div className="ml-8 flex flex-col gap-3">
+      <ul className="flex flex-col gap-3">
         {data.map((item) => (
-          <div key={item.name} className="flex items-center gap-3">
-            <div
-              className="size-3 rounded-full"
+          <li key={item.name} className="flex items-center gap-2.5">
+            <span
+              className="size-2.5 shrink-0 rounded-full"
               style={{ backgroundColor: item.fill }}
             />
-            <div className="flex flex-col">
-              <span className="text-sm font-medium">{item.name}</span>
-              <span className="font-mono text-xs text-muted-foreground">
-                {item.value} ({getPercentage(item.value)}%)
+            <span>
+              <span className="block text-[13px] font-medium text-foreground">
+                {item.name}
               </span>
-            </div>
-          </div>
+              <span className="block font-mono text-[11px] tabular-nums text-ink-3">
+                {item.value} · {percentage(item.value)}%
+              </span>
+            </span>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   )
 }

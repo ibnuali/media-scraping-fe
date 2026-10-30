@@ -1,3 +1,4 @@
+import { SearchCode, Play, MoreVertical, Pencil, Trash2, XCircle, Loader2, CheckCircle } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import {
@@ -6,20 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-  Pencil,
-  Trash2,
-  Loader2,
-  XCircle,
-  MoreVertical,
-  BarChart3,
-  Play,
-  Search,
-  FileText,
-  Sparkles,
-  CheckCircle,
-} from "lucide-react"
-import { formatLastScraped } from "@/lib/utils"
+import { cn, formatLastScraped } from "@/lib/utils"
 import type { KeywordResponse } from "@/types/keyword"
 import type { ScrapeJob } from "@/hooks/use-async-scrape"
 
@@ -33,59 +21,84 @@ interface KeywordCardProps {
   isDeleting: boolean
 }
 
-function getStageInfo(
-  stage: ScrapeJob["stage"],
-  progress: { current: number; total: number } | null
-) {
-  switch (stage) {
-    case "searching":
-      return {
-        icon: <Search className="size-3.5 animate-pulse" />,
-        label: "Searching...",
-        color: "text-blue-500",
-      }
-    case "scraping":
-      return {
-        icon: <FileText className="size-3.5 animate-pulse" />,
-        label: progress
-          ? `Scraping ${progress.current}/${progress.total}`
-          : "Scraping...",
-        color: "text-amber-500",
-      }
-    case "analyzing":
-      return {
-        icon: <Sparkles className="size-3.5 animate-pulse" />,
-        label: progress
-          ? `Analyzing ${progress.current}/${progress.total}`
-          : "Analyzing...",
-        color: "text-purple-500",
-      }
-    case "summarizing":
-      return {
-        icon: <FileText className="size-3.5 animate-pulse" />,
-        label: "Summarizing...",
-        color: "text-cyan-500",
-      }
-    case "completed":
-      return {
-        icon: <CheckCircle className="size-3.5" />,
-        label: "Done",
-        color: "text-green-500",
-      }
-    case "failed":
-      return {
-        icon: <XCircle className="size-3.5" />,
-        label: "Failed",
-        color: "text-destructive",
-      }
-    default:
-      // No stage yet - waiting for job to start
-      return {
-        icon: <Loader2 className="size-3.5 animate-spin" />,
-        label: "Starting...",
-        color: "text-muted-foreground",
-      }
+type Status = {
+  icon: React.ReactNode
+  label: string
+  color: string
+}
+
+function getStatus(
+  scrapeJob: ScrapeJob | undefined,
+  isScraping: boolean
+): Status | null {
+  if (isScraping && scrapeJob) {
+    switch (scrapeJob.stage) {
+      case "searching":
+        return {
+          icon: <Loader2 className="size-3.5 animate-spin" />,
+          label: "Searching",
+          color: "text-primary",
+        }
+      case "scraping":
+        return {
+          icon: <Loader2 className="size-3.5 animate-spin" />,
+          label: scrapeJob.progress
+            ? `Scraping ${scrapeJob.progress.current}/${scrapeJob.progress.total}`
+            : "Scraping",
+          color: "text-warning",
+        }
+      case "analyzing":
+        return {
+          icon: <Loader2 className="size-3.5 animate-spin" />,
+          label: scrapeJob.progress
+            ? `Analyzing ${scrapeJob.progress.current}/${scrapeJob.progress.total}`
+            : "Analyzing",
+          color: "text-primary",
+        }
+      case "summarizing":
+        return {
+          icon: <Loader2 className="size-3.5 animate-spin" />,
+          label: "Summarizing",
+          color: "text-primary",
+        }
+      case "completed":
+        return {
+          icon: <CheckCircle className="size-3.5" />,
+          label: "Done",
+          color: "text-success",
+        }
+      case "failed":
+        return {
+          icon: <XCircle className="size-3.5" />,
+          label: scrapeJob.error || "Failed",
+          color: "text-destructive",
+        }
+      default:
+        return {
+          icon: <Loader2 className="size-3.5 animate-spin" />,
+          label: "Starting",
+          color: "text-ink-2",
+        }
+    }
   }
+
+  if (scrapeJob?.status === "failed" || scrapeJob?.stage === "failed") {
+    return {
+      icon: <XCircle className="size-3.5" />,
+      label: scrapeJob.error || "Failed",
+      color: "text-destructive",
+    }
+  }
+
+  if (scrapeJob?.stage === "completed") {
+    return {
+      icon: <CheckCircle className="size-3.5" />,
+      label: "Done",
+      color: "text-success",
+    }
+  }
+
+  return null
 }
 
 export function KeywordCard({
@@ -98,81 +111,57 @@ export function KeywordCard({
   isDeleting,
 }: KeywordCardProps) {
   const navigate = useNavigate()
-
-  const getScrapeStatus = () => {
-    if (isScraping && scrapeJob) {
-      const stageInfo = getStageInfo(scrapeJob.stage, scrapeJob.progress)
-      return {
-        icon: stageInfo.icon,
-        label: stageInfo.label,
-        color: stageInfo.color,
-      }
-    }
-    if (scrapeJob?.status === "failed" || scrapeJob?.stage === "failed") {
-      return {
-        icon: <XCircle className="size-3.5 text-destructive" />,
-        label: scrapeJob.error || "Failed",
-        color: "text-destructive",
-      }
-    }
-    if (scrapeJob?.stage === "completed") {
-      return {
-        icon: <CheckCircle className="size-3.5 text-green-500" />,
-        label: "Done",
-        color: "text-green-500",
-      }
-    }
-    return null
-  }
-
-  const status = getScrapeStatus()
+  const status = getStatus(scrapeJob, isScraping)
 
   return (
-    <div className="group flex items-center justify-between gap-3 rounded-md border border-border bg-card px-3 py-2 transition-colors hover:bg-muted/50">
-      {/* Left: Keyword info */}
+    <div className="group flex items-center gap-3 rounded-lg border border-border bg-card px-3 py-2.5 transition-colors duration-150 hover:border-primary/40">
       <button
         onClick={() => navigate(`/keywords/${keyword.id}`)}
-        className="flex flex-1 items-center gap-2 text-left"
+        className="flex min-w-0 flex-1 items-center gap-3 rounded-md text-left focus-visible:outline-none"
       >
-        <div className="flex size-8 items-center justify-center rounded-md bg-primary/10 text-primary">
-          <BarChart3 className="size-4" />
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="truncate font-medium">{keyword.keyword}</p>
-          <p className="text-xs text-muted-foreground">
-            Max {keyword.max_result} • {formatLastScraped(keyword.last_scraped)}
-          </p>
-        </div>
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+          <SearchCode className="size-4" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-[13px] font-medium text-foreground">
+            {keyword.keyword}
+          </span>
+          <span className="block truncate font-mono text-[11px] tabular-nums text-ink-3">
+            max {keyword.max_result} · {formatLastScraped(keyword.last_scraped)}
+          </span>
+        </span>
       </button>
 
-      {/* Right: Status + Actions */}
-      <div className="flex items-center gap-2">
-        {/* Scrape status or Scrape button */}
+      <div className="flex shrink-0 items-center gap-1.5">
         {status ? (
-          <div className={`flex items-center gap-1.5 font-mono text-xs ${status.color}`}>
+          <span
+            className={cn(
+              "flex items-center gap-1.5 font-mono text-[11px] whitespace-nowrap",
+              status.color
+            )}
+          >
             {status.icon}
-            <span>{status.label}</span>
-          </div>
+            <span className="max-w-40 truncate">{status.label}</span>
+          </span>
         ) : (
           <Button
             variant="ghost"
             size="sm"
             onClick={() => onScrape(keyword)}
-            className="h-8 gap-1.5 text-xs"
+            className="gap-1.5 text-xs"
           >
             <Play className="size-3.5" />
             Scrape
           </Button>
         )}
 
-        {/* More actions dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
               <Button
                 variant="ghost"
                 size="icon-xs"
-                className="opacity-0 group-hover:opacity-100"
+                aria-label={`Actions for ${keyword.keyword}`}
               >
                 <MoreVertical className="size-4" />
               </Button>

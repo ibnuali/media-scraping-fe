@@ -1,5 +1,6 @@
 import { Loader2, RefreshCw, FileText } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Panel, PanelBody, PanelHead } from "@/components/panel"
 import type { KeywordResponse } from "@/types/keyword"
 
 interface KeywordSummarySectionProps {
@@ -16,60 +17,49 @@ export function KeywordSummarySection({
   const hasSummary = !!keyword.keyword_summary
 
   return (
-    <div className="rounded-md border border-border bg-card p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <FileText className="size-5 text-muted-foreground" />
-          <h2 className="text-lg font-semibold">Keyword Summary</h2>
-          {isGenerating && (
-            <span className="ml-2 flex items-center gap-1 text-xs text-muted-foreground">
-              <Loader2 className="size-3 animate-spin" />
-              Generating...
-            </span>
-          )}
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={onRegenerate}
-          disabled={isGenerating}
-        >
-          {isGenerating ? (
-            <>
-              <Loader2 className="mr-2 size-4 animate-spin" />
-              Generating...
-            </>
-          ) : (
-            <>
-              <RefreshCw className="mr-2 size-4" />
-              {hasSummary ? "Regenerate" : "Generate"}
-            </>
-          )}
-        </Button>
-      </div>
-
-      {isGenerating && !hasSummary ? (
-        <div className="flex flex-col items-center justify-center py-8 text-center">
-          <Loader2 className="mb-3 size-8 animate-spin text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">Generating summary...</p>
-        </div>
-      ) : hasSummary ? (
-        <div className="prose prose-sm dark:prose-invert max-w-none">
-          <p className="text-sm leading-relaxed whitespace-pre-wrap text-muted-foreground">
+    <Panel>
+      <PanelHead
+        title="Keyword summary"
+        hint={hasSummary ? "generated from scraped articles" : "not generated"}
+        actions={
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onRegenerate}
+            disabled={isGenerating}
+            className="gap-1.5"
+          >
+            {isGenerating ? (
+              <Loader2 className="size-3.5 animate-spin" />
+            ) : (
+              <RefreshCw className="size-3.5" />
+            )}
+            {hasSummary ? "Regenerate" : "Generate"}
+          </Button>
+        }
+      />
+      <PanelBody>
+        {isGenerating && !hasSummary ? (
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <Loader2 className="mb-3 size-6 animate-spin text-ink-3" />
+            <p className="font-mono text-[11px] text-ink-3">
+              generating summary…
+            </p>
+          </div>
+        ) : hasSummary ? (
+          <p className="max-w-prose text-sm leading-relaxed whitespace-pre-wrap text-ink-2">
             {keyword.keyword_summary}
           </p>
-        </div>
-      ) : (
-        <div className="flex flex-col items-center justify-center py-8 text-center">
-          <FileText className="mb-3 size-10 text-muted-foreground/50" />
-          <p className="text-sm text-muted-foreground">
-            No summary available yet.
-          </p>
-          <p className="mt-1 text-xs text-muted-foreground/70">
-            Scrape some articles first, then generate a summary.
-          </p>
-        </div>
-      )}
-    </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <FileText className="mb-3 size-7 text-ink-3" />
+            <p className="text-[13px] text-ink-2">No summary yet</p>
+            <p className="mt-1 font-mono text-[11px] text-ink-3">
+              scrape some articles, then generate
+            </p>
+          </div>
+        )}
+      </PanelBody>
+    </Panel>
   )
 }

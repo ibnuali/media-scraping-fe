@@ -2,7 +2,9 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "@/contexts/auth-context"
 import { RegisterForm } from "./RegisterForm"
-import { Loader2, KeyRound } from "lucide-react"
+import { AuthHeroSection } from "./AuthHeroSection"
+import { Wordmark } from "@/components/wordmark"
+import { Loader2 } from "lucide-react"
 
 export function RegisterPage() {
   const [error, setError] = useState("")
@@ -19,7 +21,7 @@ export function RegisterPage() {
   if (isLoading || isAuthenticated) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+        <Loader2 className="size-6 animate-spin text-ink-3" />
       </div>
     )
   }
@@ -45,20 +47,28 @@ export function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md space-y-4">
-        <div className="flex items-center justify-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-md bg-primary">
-            <KeyRound className="size-5 text-primary-foreground" />
-          </div>
-          <span className="text-xl font-bold">KeyCrawl</span>
-        </div>
+    <div className="flex min-h-screen bg-background">
+      <AuthHeroSection
+        badge="Request access"
+        title="Start tracking."
+        titleAccent="Scrape the news behind it."
+        description="Create an account to track keywords, pull the articles behind them, and get sentiment plus a summary on every scrape."
+        features={[
+          "Track the terms you care about",
+          "Scrape articles from Google News",
+          "Sentiment, matched terms, summaries",
+        ]}
+      />
 
-        <RegisterForm
-          onSubmit={handleRegister}
-          isLoading={isLoadingForm}
-          error={error}
-        />
+      <div className="flex flex-1 items-center justify-center p-6">
+        <div className="w-full max-w-sm space-y-6">
+          <Wordmark className="lg:hidden" />
+          <RegisterForm
+            onSubmit={handleRegister}
+            isLoading={isLoadingForm}
+            error={error}
+          />
+        </div>
       </div>
     </div>
   )

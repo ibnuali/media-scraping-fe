@@ -19,11 +19,11 @@ export function NotificationList({ limit = 10 }: NotificationListProps) {
   if (isLoading) {
     return (
       <div className="space-y-3 p-3">
-        {[...Array(3)].map((_, i) => (
-          <div key={i} className="flex gap-3">
-            <Skeleton className="h-5 w-5 rounded-full" />
+        {Array.from({ length: 3 }).map((_, index) => (
+          <div key={index} className="flex gap-3">
+            <Skeleton className="size-4 shrink-0 rounded-full" />
             <div className="flex-1 space-y-2">
-              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-3.5 w-3/4" />
               <Skeleton className="h-3 w-full" />
             </div>
           </div>
@@ -34,8 +34,8 @@ export function NotificationList({ limit = 10 }: NotificationListProps) {
 
   if (isError) {
     return (
-      <div className="p-4 text-center text-sm text-destructive">
-        Failed to load notifications
+      <div className="p-4 text-center text-[13px] text-destructive">
+        Couldn&apos;t load notifications
       </div>
     )
   }
