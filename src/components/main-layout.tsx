@@ -2,9 +2,9 @@ import { Outlet, NavLink, useNavigate, useLocation } from "react-router-dom"
 import { useAuth } from "@/contexts/auth-context"
 import { useSidebar } from "@/contexts/sidebar-context"
 import { Button } from "@/components/ui/button"
+import { Wordmark } from "@/components/wordmark"
 import { cn } from "@/lib/utils"
 import {
-  KeyRound,
   LogOut,
   X,
   ChevronLeft,
@@ -13,8 +13,9 @@ import {
   ArrowLeft,
   User,
   AlertTriangle,
+  Menu,
 } from "lucide-react"
-import { useState, createContext, useContext } from "react"
+import { useState, useEffect, createContext, useContext } from "react"
 import {
   Tooltip,
   TooltipContent,
@@ -84,6 +85,16 @@ export function MainLayout() {
     enabled: !!user,
   })
 
+  // Close the mobile drawer on Escape
+  useEffect(() => {
+    if (!sidebarOpen) return
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSidebarOpen(false)
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [sidebarOpen])
+
   const handleLogout = () => {
     logout()
     navigate("/login")
@@ -108,13 +119,15 @@ export function MainLayout() {
           <div
             className="fixed inset-0 z-40 bg-black/60 lg:hidden"
             onClick={() => setSidebarOpen(false)}
+            aria-hidden="true"
           />
         )}
 
         {/* Sidebar */}
         <aside
+          aria-label="Main navigation"
           className={cn(
-            "fixed inset-y-0 left-0 z-50 flex flex-col border-r border-border bg-sidebar transition-[width] duration-200 lg:translate-x-0",
+            "fixed inset-y-0 left-0 z-50 flex flex-col border-r border-border bg-sidebar transition-transform duration-200 ease-out lg:translate-x-0",
             sidebarOpen ? "translate-x-0" : "-translate-x-full",
             collapsed ? "w-16" : "w-60"
           )}
@@ -122,31 +135,19 @@ export function MainLayout() {
           {/* Logo */}
           <div
             className={cn(
-              "flex h-12 items-center border-b border-border transition-all duration-200",
+              "flex h-12 items-center border-b border-border",
               collapsed ? "justify-center px-2" : "justify-between px-4"
             )}
           >
-            <div
-              className={cn(
-                "flex items-center",
-                collapsed ? "justify-center" : "gap-2.5"
-              )}
-            >
-              <div className="flex size-8 items-center justify-center rounded-md bg-primary">
-                <KeyRound className="size-4 text-primary-foreground" />
-              </div>
-              {!collapsed && (
-                <span className="text-sm font-semibold tracking-tight text-foreground">
-                  KeyCrawl
-                </span>
-              )}
-            </div>
+            <Wordmark size="sm" iconOnly={collapsed} />
+
             {!collapsed && (
               <Button
                 variant="ghost"
                 size="icon-xs"
                 className="lg:hidden"
                 onClick={() => setSidebarOpen(false)}
+                aria-label="Close navigation"
               >
                 <X className="size-4" />
               </Button>
@@ -156,7 +157,7 @@ export function MainLayout() {
           {/* Navigation */}
           <nav className="flex-1 space-y-0.5 p-3">
             {!collapsed && (
-              <div className="mb-1.5 px-2 text-[10px] font-medium tracking-widest text-muted-foreground/60 uppercase">
+              <div className="mb-1.5 px-2 font-mono text-[10px] tracking-[0.12em] text-ink-3 uppercase">
                 Navigation
               </div>
             )}
@@ -171,7 +172,7 @@ export function MainLayout() {
                     collapsed ? "justify-center px-2 py-2" : "px-2.5 py-2",
                     isActive
                       ? "bg-primary/15 text-primary"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      : "text-ink-2 hover:bg-muted hover:text-foreground"
                   )
                 }
               >
@@ -212,7 +213,7 @@ export function MainLayout() {
 
                   <TooltipContent side="right">
                     <p className="font-medium">{user?.username}</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-ink-2">
                       {user?.email || "Logged in"}
                     </p>
                   </TooltipContent>
@@ -225,7 +226,7 @@ export function MainLayout() {
                           variant="ghost"
                           size="icon-xs"
                           onClick={() => navigate("/profile")}
-                          className="text-muted-foreground hover:text-foreground"
+                          className="text-ink-2 hover:text-foreground"
                         >
                           <User className="size-3.5" />
                         </Button>
@@ -240,7 +241,7 @@ export function MainLayout() {
                           variant="ghost"
                           size="icon-xs"
                           onClick={handleLogout}
-                          className="text-muted-foreground hover:text-destructive"
+                          className="text-ink-2 hover:text-destructive"
                         >
                           <LogOut className="size-3.5" />
                         </Button>
@@ -252,7 +253,7 @@ export function MainLayout() {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center gap-2.5 rounded-md border border-border bg-sidebar p-2">
+              <div className="flex items-center gap-2.5">
                 <Button
                   variant="ghost"
                   size="icon-xs"
@@ -265,8 +266,8 @@ export function MainLayout() {
                   <p className="truncate text-[13px] font-medium">
                     @{user?.username}
                   </p>
-                  <p className="truncate text-[11px] text-muted-foreground">
-                    {user?.email || "Logged in"}
+                  <p className="truncate font-mono text-[11px] text-ink-3">
+                    {user?.email || "logged in"}
                   </p>
                 </div>
                 <div className="flex items-center gap-0.5">
@@ -275,7 +276,8 @@ export function MainLayout() {
                     size="icon-xs"
                     onClick={() => navigate("/profile")}
                     title="Profile"
-                    className="text-muted-foreground hover:text-foreground"
+                    aria-label="Profile"
+                    className="text-ink-2 hover:text-foreground"
                   >
                     <User className="size-3.5" />
                   </Button>
@@ -284,7 +286,8 @@ export function MainLayout() {
                     size="icon-xs"
                     onClick={handleLogout}
                     title="Logout"
-                    className="text-muted-foreground hover:text-destructive"
+                    aria-label="Logout"
+                    className="text-ink-2 hover:text-destructive"
                   >
                     <LogOut className="size-3.5" />
                   </Button>
@@ -298,6 +301,7 @@ export function MainLayout() {
             variant="ghost"
             size="icon-xs"
             onClick={() => setCollapsed(!collapsed)}
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             className="absolute top-14 -right-3 z-50 hidden size-6 rounded-full border border-border bg-background hover:bg-muted lg:flex"
           >
             {collapsed ? (
@@ -311,25 +315,39 @@ export function MainLayout() {
         {/* Main content */}
         <div
           className={cn(
-            "flex min-w-0 flex-1 flex-col transition-[margin] duration-200",
+            "flex min-w-0 flex-1 flex-col",
             collapsed ? "lg:ml-16" : "lg:ml-60"
           )}
         >
           {/* Header */}
           <header className="sticky top-0 z-30 flex h-11 items-center justify-between gap-3 border-b border-border bg-background px-4 lg:px-6">
             <div className="flex min-w-0 items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                className="lg:hidden"
+                onClick={() => setSidebarOpen(true)}
+                aria-label="Open navigation"
+              >
+                <Menu className="size-4" />
+              </Button>
               {isDetailPage && (
-                <Button variant="ghost" size="icon-xs" onClick={handleBack}>
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  onClick={handleBack}
+                  aria-label="Back to keywords"
+                >
                   <ArrowLeft className="size-4" />
                 </Button>
               )}
               {title && (
                 <div className="min-w-0">
-                  <h1 className="truncate text-sm font-semibold tracking-tight">
+                  <h1 className="truncate text-[13px] font-semibold tracking-tight">
                     {title}
                   </h1>
                   {description && (
-                    <p className="truncate text-xs text-muted-foreground">
+                    <p className="truncate text-[11px] text-ink-3">
                       {description}
                     </p>
                   )}

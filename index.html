@@ -17,6 +17,22 @@
     <meta name="twitter:title" content="KeyCrawl - Keyword Tracking & News Scraping" />
     <meta name="twitter:description" content="Monitor keywords and automatically scrape news articles. Stay ahead with real-time updates." />
     <meta name="theme-color" content="#171717" />
+    <script>
+      // Set the theme class before first paint to avoid a flash.
+      (function () {
+        try {
+          var stored = localStorage.getItem("theme")
+          var prefersDark = window.matchMedia(
+            "(prefers-color-scheme: dark)"
+          ).matches
+          var isDark =
+            stored === "dark" || ((stored === "system" || !stored) && prefersDark)
+          document.documentElement.classList.add(isDark ? "dark" : "light")
+        } catch (error) {
+          document.documentElement.classList.add("dark")
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

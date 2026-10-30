@@ -1,3 +1,4 @@
 [
+  { "date": "2026-09-26", "macrostructure": "Sidebar Shell", "theme": "custom", "enrichment": "none", "brief": "KeyCrawl · consistency pass across all pages inside the locked design.md — dark/light inversion fix, token cleanup, shared Wordmark/Panel/StatBand primitives", "scope": "app", "theme_axes": "dark / grotesk-sans / cool-violet" },
   { "date": "2026-07-28", "macrostructure": "Sidebar Shell", "theme": "custom", "enrichment": "none", "brief": "KeyCrawl · keyword tracking tool · Bruno-inspired dark utilitarian redesign", "scope": "app", "theme_axes": "dark / grotesk-sans / cool-violet" }
 ]

@@ -3,6 +3,9 @@ import { useTheme } from "@/components/theme-provider"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
+const iconTransition =
+  "size-4 transition-[transform,opacity] duration-200 ease-out"
+
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
 
@@ -16,34 +19,39 @@ export function ThemeToggle() {
     }
   }
 
+  const label =
+    theme === "system" ? "System theme" : theme === "dark" ? "Dark" : "Light"
+
   return (
     <Button
       variant="ghost"
       size="icon"
       onClick={cycleTheme}
-      className="relative size-8 rounded-md hover:bg-muted"
+      className="relative"
+      aria-label={`Theme: ${label}. Change theme`}
+      title={`Theme: ${label}`}
     >
       <Sun
         className={cn(
-          "size-4 transition-all duration-200",
+          iconTransition,
           theme === "light"
-            ? "scale-100 rotate-0 text-amber-500"
+            ? "scale-100 rotate-0 text-warning"
             : "absolute scale-0 rotate-90"
         )}
       />
       <Moon
         className={cn(
-          "size-4 transition-all duration-200",
+          iconTransition,
           theme === "dark"
-            ? "scale-100 rotate-0 text-blue-400"
+            ? "scale-100 rotate-0 text-primary"
             : "absolute scale-0 -rotate-90"
         )}
       />
       <Monitor
         className={cn(
-          "size-4 transition-all duration-200",
+          iconTransition,
           theme === "system"
-            ? "scale-100 rotate-0 text-primary"
+            ? "scale-100 rotate-0 text-ink-2"
             : "absolute scale-0"
         )}
       />

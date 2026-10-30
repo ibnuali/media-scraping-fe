@@ -18,41 +18,33 @@ interface TopKeywordsChartProps {
   data: TopKeywordData[]
 }
 
-const COLORS = [
-  "oklch(0.65 0.18 265)",
-  "oklch(0.65 0.18 300)",
-  "oklch(0.65 0.18 200)",
-  "oklch(0.65 0.18 160)",
-  "oklch(0.65 0.18 80)",
+// Token-driven so the bars follow the active theme.
+const BAR_COLORS = [
+  "var(--color-chart-1)",
+  "var(--color-chart-2)",
+  "var(--color-chart-3)",
+  "var(--color-chart-4)",
+  "var(--color-chart-5)",
 ]
-
-function getCSSVarColor(varName: string): string {
-  if (typeof window === "undefined") return "#000"
-  const style = getComputedStyle(document.documentElement)
-  const value = style.getPropertyValue(varName).trim()
-  return value || "#000"
-}
 
 function truncateKeyword(keyword: string, maxLength = 14) {
   return keyword.length > maxLength
-    ? `${keyword.slice(0, maxLength)}...`
+    ? `${keyword.slice(0, maxLength)}…`
     : keyword
 }
 
 export function TopKeywordsChart({ data }: TopKeywordsChartProps) {
   const topData = data.slice(0, 5)
 
-  // Force re-render colors when theme changes
-  const foregroundColor = getCSSVarColor("--foreground")
-  const mutedColor = getCSSVarColor("--muted-foreground")
-
   if (topData.length === 0) {
     return (
-      <div className="flex h-64 items-center justify-center text-muted-foreground">
+      <div className="flex h-64 items-center justify-center">
         <div className="text-center">
-          <Hash className="mx-auto mb-2 size-8" />
-          <p>No keyword matches found</p>
-          <p className="text-sm">Scrape some articles to see top keywords</p>
+          <Hash className="mx-auto mb-2 size-7 text-ink-3" />
+          <p className="text-[13px] text-ink-2">No matched keywords yet</p>
+          <p className="mt-1 font-mono text-[11px] text-ink-3">
+            scrape some articles to see top terms
+          </p>
         </div>
       </div>
     )
@@ -64,14 +56,14 @@ export function TopKeywordsChart({ data }: TopKeywordsChartProps) {
         <BarChart
           data={topData}
           layout="vertical"
-          margin={{ top: 5, right: 50, left: 10, bottom: 5 }}
+          margin={{ top: 4, right: 40, left: 0, bottom: 4 }}
           barCategoryGap="25%"
         >
           <XAxis
             type="number"
             axisLine={false}
             tickLine={false}
-            tick={{ fill: mutedColor, fontSize: 12 }}
+            tick={{ fill: "var(--color-ink-3)", fontSize: 11 }}
             allowDecimals={false}
             domain={[0, "auto"]}
           />
@@ -80,24 +72,22 @@ export function TopKeywordsChart({ data }: TopKeywordsChartProps) {
             type="category"
             axisLine={false}
             tickLine={false}
-            tick={{ fill: foregroundColor, fontSize: 13, fontWeight: 500 }}
+            tick={{ fill: "var(--color-ink-2)", fontSize: 12 }}
             tickFormatter={(value) => truncateKeyword(value)}
-            width={110}
+            width={108}
           />
-          <Bar dataKey="count" radius={[0, 4, 4, 0]} barSize={24}>
-            {topData.map((_, index) => (
+          <Bar dataKey="count" radius={[0, 3, 3, 0]} barSize={22}>
+            {topData.map((entry, index) => (
               <Cell
-                key={`cell-${index}`}
-                fill={COLORS[index % COLORS.length]}
-                fillOpacity={0.85}
+                key={entry.keyword}
+                fill={BAR_COLORS[index % BAR_COLORS.length]}
               />
             ))}
             <LabelList
               dataKey="count"
               position="right"
-              fill={foregroundColor}
-              fontSize={13}
-              fontWeight={600}
+              fill="var(--color-foreground)"
+              fontSize={12}
             />
           </Bar>
         </BarChart>

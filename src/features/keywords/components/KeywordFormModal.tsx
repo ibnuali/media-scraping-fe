@@ -9,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { AlertCircle, Loader2 } from "lucide-react"
 import type { KeywordResponse } from "@/types/keyword"
 
 interface KeywordFormModalProps {
@@ -39,10 +40,10 @@ export function KeywordFormModal({
 }: KeywordFormModalProps) {
   return (
     <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="rounded-md">
+      <DialogContent className="rounded-lg">
         <DialogHeader>
-          <DialogTitle className="text-lg">
-            {mode === "create" ? "Add Keyword" : "Edit Keyword"}
+          <DialogTitle className="text-base font-semibold tracking-tight">
+            {mode === "create" ? "Add keyword" : "Edit keyword"}
           </DialogTitle>
           <DialogDescription>
             {mode === "create"
@@ -51,33 +52,38 @@ export function KeywordFormModal({
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={onSubmit}>
-          <div className="space-y-3 py-3">
+          <div className="space-y-3.5 py-3">
             {formError && (
-              <div className="rounded-md border border-destructive/20 bg-destructive/10 p-2 text-sm text-destructive">
-                {formError}
+              <div
+                role="alert"
+                className="flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-2.5 text-[13px] text-destructive"
+              >
+                <AlertCircle className="mt-0.5 size-3.5 shrink-0" />
+                <span>{formError}</span>
               </div>
             )}
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label htmlFor="keyword">Keyword</Label>
               <Input
                 id="keyword"
                 type="text"
-                placeholder="Enter keyword"
+                placeholder="e.g. electric vehicles"
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
                 required
                 disabled={isSubmitting}
-                className="h-10 rounded-md"
+                autoFocus
+                className="h-10"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="maxResult">Max Results</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="maxResult">Max results</Label>
               <Input
                 id="maxResult"
                 type="number"
                 min={1}
                 max={100}
-                placeholder="1-100"
+                placeholder="1–100"
                 value={maxResult || ""}
                 onChange={(e) => {
                   const value = e.target.value
@@ -91,8 +97,11 @@ export function KeywordFormModal({
                   }
                 }}
                 disabled={isSubmitting}
-                className="h-10 rounded-md"
+                className="h-10 font-mono tabular-nums"
               />
+              <p className="font-mono text-[11px] text-ink-3">
+                articles pulled per scrape · 1–100
+              </p>
             </div>
           </div>
           <DialogFooter className="gap-2">
@@ -101,16 +110,12 @@ export function KeywordFormModal({
               variant="outline"
               onClick={onClose}
               disabled={isSubmitting}
-              className="rounded-md"
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="rounded-md"
-            >
-              {isSubmitting ? "Saving..." : "Save"}
+            <Button type="submit" disabled={isSubmitting} className="gap-1.5">
+              {isSubmitting && <Loader2 className="size-4 animate-spin" />}
+              {isSubmitting ? "Saving…" : "Save"}
             </Button>
           </DialogFooter>
         </form>

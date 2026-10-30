@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom"
-import { Loader2, Play } from "lucide-react"
+import { AlertTriangle, Loader2, Play } from "lucide-react"
+import { Panel, PanelBody, PanelHead } from "@/components/panel"
 import {
   useKeyword,
   useKeywordAnalytics,
@@ -103,15 +104,16 @@ export function KeywordDashboardPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+        <Loader2 className="size-6 animate-spin text-ink-3" />
       </div>
     )
   }
 
   if (!keyword) {
     return (
-      <div className="rounded-md border border-destructive/20 bg-destructive/10 p-6 text-center text-destructive">
-        Keyword not found
+      <div className="flex items-start gap-2.5 rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-destructive">
+        <AlertTriangle className="mt-0.5 size-4 shrink-0" />
+        <p className="text-[13px] font-medium">Keyword not found</p>
       </div>
     )
   }
@@ -124,30 +126,24 @@ export function KeywordDashboardPage() {
 
   return (
     <div className="space-y-4">
-      {/* Scrape action bar */}
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm text-muted-foreground">
-            Last scraped:{" "}
-            {keyword.last_scraped
-              ? new Date(keyword.last_scraped).toLocaleString()
-              : "Never"}
-          </p>
-        </div>
-        <Button
-          onClick={handleStartScrape}
-          disabled={isScraping}
-          className="gap-2"
-        >
+      {/* Action row */}
+      <div className="flex items-center justify-between gap-3">
+        <p className="font-mono text-[11px] tracking-[0.08em] text-ink-3">
+          last scraped ·{" "}
+          {keyword.last_scraped
+            ? new Date(keyword.last_scraped).toLocaleString()
+            : "never"}
+        </p>
+        <Button onClick={handleStartScrape} disabled={isScraping} className="gap-1.5">
           {isScraping ? (
             <>
               <Loader2 className="size-4 animate-spin" />
-              Scraping...
+              Scraping…
             </>
           ) : (
             <>
               <Play className="size-4" />
-              Start Scrape
+              Start scrape
             </>
           )}
         </Button>
@@ -172,20 +168,24 @@ export function KeywordDashboardPage() {
         onRegenerate={handleRegenerateSummary}
       />
 
-      <div className="grid gap-3 lg:grid-cols-2">
-        <div className="rounded-md border border-border bg-card p-4">
-          <h2 className="mb-3 text-lg font-semibold">Sentiment Distribution</h2>
-          <SentimentChart
-            positive={analytics?.sentiment?.positive ?? 0}
-            negative={analytics?.sentiment?.negative ?? 0}
-            neutral={analytics?.sentiment?.neutral ?? 0}
-          />
-        </div>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Panel>
+          <PanelHead title="Sentiment distribution" hint="across all articles" />
+          <PanelBody>
+            <SentimentChart
+              positive={analytics?.sentiment?.positive ?? 0}
+              negative={analytics?.sentiment?.negative ?? 0}
+              neutral={analytics?.sentiment?.neutral ?? 0}
+            />
+          </PanelBody>
+        </Panel>
 
-        <div className="rounded-md border border-border bg-card p-4">
-          <h2 className="mb-3 text-lg font-semibold">Top Matched Keywords</h2>
-          <TopKeywordsChart data={topKeywordsData} />
-        </div>
+        <Panel>
+          <PanelHead title="Top matched keywords" hint="most frequent terms" />
+          <PanelBody>
+            <TopKeywordsChart data={topKeywordsData} />
+          </PanelBody>
+        </Panel>
       </div>
 
       <KeywordFrequencyList keywords={analytics?.top_keywords ?? []} />

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Loader2, Eye, EyeOff } from "lucide-react"
+import { Loader2, Eye, EyeOff, AlertCircle } from "lucide-react"
 
 interface LoginFormProps {
   onSubmit: (username: string, password: string) => Promise<void>
@@ -23,21 +23,27 @@ export function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
   }
 
   return (
-    <Card>
-      <CardHeader className="space-y-1 pb-3">
-        <CardTitle className="text-lg">Sign in</CardTitle>
-        <p className="text-sm text-muted-foreground">
+    <Card className="rounded-lg">
+      <CardHeader className="space-y-1 border-b pb-3">
+        <CardTitle className="text-base font-semibold tracking-tight">
+          Sign in
+        </CardTitle>
+        <p className="text-[13px] text-ink-2">
           Enter your credentials to continue
         </p>
       </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-3">
+      <CardContent className="pt-1">
+        <form onSubmit={handleSubmit} className="space-y-3.5">
           {error && (
-            <div className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
-              {error}
+            <div
+              role="alert"
+              className="flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-2.5 text-[13px] text-destructive"
+            >
+              <AlertCircle className="mt-0.5 size-3.5 shrink-0" />
+              <span>{error}</span>
             </div>
           )}
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label htmlFor="username">Username</Label>
             <Input
               id="username"
@@ -48,9 +54,10 @@ export function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
               required
               disabled={isLoading}
               autoComplete="username"
+              className="h-10"
             />
           </div>
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label htmlFor="password">Password</Label>
             <div className="relative">
               <Input
@@ -62,12 +69,13 @@ export function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
                 required
                 disabled={isLoading}
                 autoComplete="current-password"
-                className="pr-10"
+                className="h-10 pr-10"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                className="absolute top-1/2 right-3 -translate-y-1/2 text-ink-3 transition-colors hover:text-foreground focus-visible:text-foreground focus-visible:outline-none"
                 tabIndex={-1}
               >
                 {showPassword ? (
@@ -78,11 +86,15 @@ export function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
               </button>
             </div>
           </div>
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button
+            type="submit"
+            className="h-10 w-full"
+            disabled={isLoading}
+          >
             {isLoading ? (
               <>
                 <Loader2 className="size-4 animate-spin" />
-                Signing in...
+                Signing in…
               </>
             ) : (
               "Sign in"
@@ -90,9 +102,12 @@ export function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
           </Button>
         </form>
 
-        <p className="mt-3 text-center text-sm text-muted-foreground">
+        <p className="mt-4 text-center text-[13px] text-ink-2">
           Don&apos;t have an account?{" "}
-          <Link to="/register" className="text-primary hover:underline">
+          <Link
+            to="/register"
+            className="font-medium text-primary underline-offset-4 hover:underline"
+          >
             Request one
           </Link>
         </p>

@@ -30,9 +30,9 @@ const statusIcons = {
 }
 
 const statusColors = {
-  success: "text-green-500",
-  failed: "text-red-500",
-  partial: "text-yellow-500",
+  success: "text-success",
+  failed: "text-destructive",
+  partial: "text-warning",
 }
 
 export function NotificationItem({
@@ -46,53 +46,49 @@ export function NotificationItem({
   return (
     <div
       className={cn(
-        "group relative flex gap-3 p-3 pr-2 transition-colors hover:bg-muted/50",
+        "group relative flex gap-3 border-b border-border p-3 pr-2 transition-colors duration-150 last:border-b-0 hover:bg-muted/50",
         !notification.is_read && "bg-primary/5"
       )}
     >
-      {/* Unread indicator */}
       {!notification.is_read && (
-        <span className="absolute top-4 left-1.5 h-2 w-2 rounded-full bg-primary" />
+        <span className="absolute top-3.5 left-1.5 size-1.5 rounded-full bg-primary" />
       )}
 
-      {/* Status icon */}
-      <div className={cn("mt-0.5 shrink-0", statusColors[status])}>
-        <StatusIcon className="h-5 w-5" />
-      </div>
+      <span className={cn("mt-0.5 shrink-0", statusColors[status])}>
+        <StatusIcon className="size-4" />
+      </span>
 
-      {/* Content */}
       <div className="min-w-0 flex-1 pr-10">
-        <p className="truncate text-sm leading-tight font-medium">
+        <p className="truncate text-[13px] leading-tight font-medium text-foreground">
           {notification.title}
         </p>
-        <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
+        <p className="mt-0.5 line-clamp-2 text-xs text-ink-2">
           {notification.message}
         </p>
-        <p className="mt-1 text-xs text-muted-foreground/60">
+        <p className="mt-1 font-mono text-[11px] text-ink-3">
           {formatTimeAgo(notification.created_at)}
         </p>
       </div>
 
-      {/* Actions - positioned absolute to not affect content width */}
-      <div className="absolute top-3 right-2 flex items-start gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+      <div className="absolute top-2.5 right-2 flex items-start gap-0.5 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100">
         {!notification.is_read && (
           <Button
             variant="ghost"
             size="icon-xs"
             onClick={() => onMarkAsRead(notification.id)}
-            title="Mark as read"
+            aria-label="Mark as read"
           >
-            <Check className="h-3.5 w-3.5" />
+            <Check className="size-3.5" />
           </Button>
         )}
         <Button
           variant="ghost"
           size="icon-xs"
           onClick={() => onDelete(notification.id)}
-          title="Delete"
-          className="text-muted-foreground hover:text-destructive"
+          aria-label="Delete notification"
+          className="text-ink-2 hover:text-destructive"
         >
-          <Trash2 className="h-3.5 w-3.5" />
+          <Trash2 className="size-3.5" />
         </Button>
       </div>
     </div>

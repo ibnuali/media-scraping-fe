@@ -2,7 +2,9 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "@/contexts/auth-context"
 import { LoginForm } from "./LoginForm"
-import { Loader2, KeyRound } from "lucide-react"
+import { AuthHeroSection } from "./AuthHeroSection"
+import { Wordmark } from "@/components/wordmark"
+import { Loader2 } from "lucide-react"
 
 export function LoginPage() {
   const [error, setError] = useState("")
@@ -19,7 +21,7 @@ export function LoginPage() {
   if (isLoading || isAuthenticated) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+        <Loader2 className="size-6 animate-spin text-ink-3" />
       </div>
     )
   }
@@ -39,20 +41,28 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md space-y-4">
-        <div className="flex items-center justify-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-md bg-primary">
-            <KeyRound className="size-5 text-primary-foreground" />
-          </div>
-          <span className="text-xl font-bold">KeyCrawl</span>
-        </div>
+    <div className="flex min-h-screen bg-background">
+      <AuthHeroSection
+        badge="Keyword monitoring"
+        title="Welcome back."
+        titleAccent="Pick up where you left off."
+        description="Sign in to review your tracked keywords, the articles behind them, and the summaries from your latest scrape."
+        features={[
+          "Every keyword in one list",
+          "Articles with sentiment and matches",
+          "A fresh summary on every run",
+        ]}
+      />
 
-        <LoginForm
-          onSubmit={handleLogin}
-          isLoading={isLoadingForm}
-          error={error}
-        />
+      <div className="flex flex-1 items-center justify-center p-6">
+        <div className="w-full max-w-sm space-y-6">
+          <Wordmark className="lg:hidden" />
+          <LoginForm
+            onSubmit={handleLogin}
+            isLoading={isLoadingForm}
+            error={error}
+          />
+        </div>
       </div>
     </div>
   )

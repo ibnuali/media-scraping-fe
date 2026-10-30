@@ -36,6 +36,8 @@ interface StoredJob {
   jobId: string
   keywordId: string
   status: ScrapingJobStatus
+  stage?: ScrapeJob["stage"]
+  progress?: { current: number; total: number } | null
 }
 
 function loadStoredJobs(): StoredJob[] {
@@ -68,6 +70,8 @@ function saveJobs(jobs: ScrapeJob[]) {
           jobId: j.jobId,
           keywordId: j.keywordId,
           status: j.status,
+          stage: j.stage,
+          progress: j.progress,
         })),
         timestamp: Date.now(),
       })
@@ -98,7 +102,8 @@ export function useAsyncScrape(options: UseAsyncScrapeOptions = {}) {
           jobId: job.jobId,
           keywordId: job.keywordId,
           status: job.status,
-          progress: null,
+          stage: job.stage,
+          progress: job.progress ?? null,
           error: null,
         },
       ])
@@ -125,38 +130,42 @@ export function useAsyncScrape(options: UseAsyncScrapeOptions = {}) {
               response.stage
             )
 
-            // Only restore if still running
-            if (
-              response.status === "running" ||
-              response.status === "pending"
-            ) {
-              // Rebuild jobToKeyword mapping
-              jobToKeywordRef.current.set(job.jobId, job.keywordId)
+            // Rebuild jobToKeyword mapping
+            jobToKeywordRef.current.set(job.jobId, job.keywordId)
 
-              setJobs((prev) => {
-                const next = new Map(prev)
-                next.set(job.keywordId, {
-                  jobId: job.jobId,
-                  keywordId: job.keywordId,
-                  status: response.status,
-                  stage: response.stage,
-                  progress: response.total
-                    ? {
-                        current: response.successful + response.failed,
-                        total: response.total,
-                      }
-                    : null,
-                  error: null,
+            const restoredJob: ScrapeJob = {
+              jobId: job.jobId,
+              keywordId: job.keywordId,
+              status: response.status,
+              stage: response.stage,
+              progress: response.total
+                ? {
+                    current: response.successful + response.failed,
+                    total: response.total,
+                  }
+                : null,
+              error: response.error_message || null,
+            }
+
+            setJobs((prev) => {
+              const next = new Map(prev)
+              next.set(job.keywordId, restoredJob)
+              return next
+            })
+
+            // Auto-clear completed/failed jobs after a delay
+            if (
+              response.status === "completed" ||
+              response.status === "failed"
+            ) {
+              setTimeout(() => {
+                setJobs((prev) => {
+                  const next = new Map(prev)
+                  next.delete(job.keywordId)
+                  saveJobs(Array.from(next.values()))
+                  return next
                 })
-                return next
-              })
-            } else {
-              // Job completed/failed while we were away, clear it
-              setJobs((prev) => {
-                const next = new Map(prev)
-                next.delete(job.keywordId)
-                return next
-              })
+              }, 3000)
             }
           } catch (err) {
             console.error(
@@ -164,12 +173,7 @@ export function useAsyncScrape(options: UseAsyncScrapeOptions = {}) {
               job.jobId,
               err
             )
-            // Remove stale job
-            setJobs((prev) => {
-              const next = new Map(prev)
-              next.delete(job.keywordId)
-              return next
-            })
+            // Keep the job from localStorage — WebSocket will update it
           }
         }
       }

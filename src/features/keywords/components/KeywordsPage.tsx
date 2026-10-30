@@ -97,6 +97,17 @@ export function KeywordsPage() {
 
   return (
     <div className="space-y-4">
+      {/* Action row */}
+      <div className="flex items-center justify-between gap-3">
+        <p className="font-mono text-[11px] tracking-[0.12em] text-ink-3 uppercase tabular-nums">
+          {keywords ? `${keywords.length} tracked` : "loading"}
+        </p>
+        <Button onClick={openCreateDialog} className="gap-1.5">
+          <Plus className="size-4" />
+          Add keyword
+        </Button>
+      </div>
+
       <KeywordsSection
         keywords={keywords}
         isLoading={isLoading}
@@ -106,17 +117,9 @@ export function KeywordsPage() {
         onEdit={openEditDialog}
         onDelete={handleDelete}
         onScrape={handleScrape}
+        onAdd={openCreateDialog}
         isDeleting={deleteMutation.isPending}
       />
-
-      {/* Floating Action Button */}
-      <Button
-        onClick={openCreateDialog}
-        size="icon"
-        className="fixed right-4 bottom-4 z-40 size-12 rounded-full transition-all hover:scale-105"
-      >
-        <Plus className="size-5" />
-      </Button>
 
       <KeywordFormModal
         open={dialogMode !== null}
