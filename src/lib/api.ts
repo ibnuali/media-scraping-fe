@@ -1,4 +1,5 @@
 import type { PasswordChange, Token, UserProfileUpdate } from "@/types/auth"
+import type { PublicationDateRange } from "@/types/keyword"
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000"
 const WS_URL = import.meta.env.VITE_WS_URL || API_URL.replace(/^http/, "ws")
@@ -253,11 +254,12 @@ export const keywordsApi = {
     })
   },
 
-  scrape: async (id: string) => {
+  scrape: async (id: string, filters?: PublicationDateRange) => {
     return apiFetch<import("@/types/keyword").ScrapingJobStartResponse>(
       `/keywords/${id}/scrape`,
       {
         method: "POST",
+        body: filters ? JSON.stringify(filters) : undefined,
       }
     )
   },

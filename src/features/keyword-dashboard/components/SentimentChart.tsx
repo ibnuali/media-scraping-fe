@@ -72,7 +72,7 @@ export function SentimentChart({
   const percentage = (value: number) => ((value / total) * 100).toFixed(0)
 
   return (
-    <div className="flex h-64 items-center justify-center gap-8">
+    <div className="flex min-h-64 flex-col items-center justify-center gap-8 py-4 sm:flex-row">
       <div className="relative">
         <ResponsiveContainer width={180} height={180}>
           <PieChart>

@@ -45,6 +45,11 @@ export interface PaginatedNewsResponse {
 }
 
 // Scraping Job types
+export interface PublicationDateRange {
+  start_date?: string | null
+  end_date?: string | null
+}
+
 export type ScrapingJobStatus = "pending" | "running" | "completed" | "failed"
 export type KeywordJobKind = "scrape" | "analysis"
 
@@ -56,7 +61,7 @@ export type ScrapingJobStage =
   | "completed"
   | "failed"
 
-export interface ScrapingJobResponse {
+export interface ScrapingJobResponse extends PublicationDateRange {
   id: string // UUID
   keyword_id: string // UUID
   status: ScrapingJobStatus

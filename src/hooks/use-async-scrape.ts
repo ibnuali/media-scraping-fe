@@ -8,6 +8,7 @@ import {
 } from "@/hooks/use-scraping-progress-websocket"
 import type {
   KeywordJobKind,
+  PublicationDateRange,
   ScrapingJobResponse,
   ScrapingJobStatus,
 } from "@/types/keyword"
@@ -17,7 +18,7 @@ interface UseAsyncScrapeOptions {
   onError?: (job: ScrapingJobResponse, keywordId: string) => void
 }
 
-export interface ScrapeJob {
+export interface ScrapeJob extends PublicationDateRange {
   kind: KeywordJobKind
   successful?: number
   failed?: number
@@ -39,7 +40,7 @@ export interface ScrapeJob {
 
 const STORAGE_KEY = "async_scrape_jobs"
 
-interface StoredJob {
+interface StoredJob extends PublicationDateRange {
   kind?: KeywordJobKind
   jobId: string
   keywordId: string
@@ -76,6 +77,8 @@ function saveJobs(jobs: ScrapeJob[]) {
       JSON.stringify({
         jobs: activeJobs.map((j) => ({
           kind: j.kind,
+          start_date: j.start_date,
+          end_date: j.end_date,
           jobId: j.jobId,
           keywordId: j.keywordId,
           status: j.status,
@@ -115,6 +118,8 @@ export function useAsyncScrape(options: UseAsyncScrapeOptions = {}) {
               : "scrape"),
           jobId: job.jobId,
           keywordId: job.keywordId,
+          start_date: job.start_date,
+          end_date: job.end_date,
           status: job.status,
           stage: job.stage,
           progress: job.progress ?? null,
@@ -159,6 +164,8 @@ export function useAsyncScrape(options: UseAsyncScrapeOptions = {}) {
                   : "scrape"),
               successful: response.successful,
               failed: response.failed,
+              start_date: response.start_date ?? job.start_date,
+              end_date: response.end_date ?? job.end_date,
               jobId: job.jobId,
               keywordId: job.keywordId,
               status: response.status,
@@ -248,7 +255,10 @@ export function useAsyncScrape(options: UseAsyncScrapeOptions = {}) {
           return prev
 
         // Build the updated job state
+        const sameJob = existing?.jobId === jobId || !existing?.jobId
         const updatedJob: ScrapeJob = {
+          start_date: sameJob ? existing?.start_date : undefined,
+          end_date: sameJob ? existing?.end_date : undefined,
           successful: progress.successful,
           failed: progress.failed,
           kind:
@@ -318,6 +328,8 @@ export function useAsyncScrape(options: UseAsyncScrapeOptions = {}) {
             stage: job.stage,
             successful: job.successful,
             failed: job.failed,
+            start_date: job.start_date ?? existing.start_date,
+            end_date: job.end_date ?? existing.end_date,
             progress:
               job.total != null
                 ? { current: job.successful + job.failed, total: job.total }
@@ -385,9 +397,14 @@ export function useAsyncScrape(options: UseAsyncScrapeOptions = {}) {
   )
 
   const startJob = useCallback(
-    async (keywordId: string, kind: KeywordJobKind) => {
+    async (
+      keywordId: string,
+      kind: KeywordJobKind,
+      filters?: PublicationDateRange
+    ) => {
       // Set initial state - no stage yet, waiting for WebSocket events
       const initialState: ScrapeJob = {
+        ...(kind === "scrape" ? filters : undefined),
         kind,
         stage: kind === "analysis" ? "analyzing" : undefined,
         jobId: "",
@@ -405,7 +422,7 @@ export function useAsyncScrape(options: UseAsyncScrapeOptions = {}) {
       try {
         const response = await (kind === "analysis"
           ? keywordsApi.analyze(keywordId)
-          : keywordsApi.scrape(keywordId))
+          : keywordsApi.scrape(keywordId, filters))
 
         // Map job ID to keyword ID for WebSocket updates
         jobToKeywordRef.current.set(response.job_id, keywordId)
@@ -434,6 +451,8 @@ export function useAsyncScrape(options: UseAsyncScrapeOptions = {}) {
         setJobs((prev) => {
           const next = new Map(prev)
           next.set(keywordId, {
+            start_date: initialState.start_date,
+            end_date: initialState.end_date,
             kind,
             stage: "failed",
             jobId: "",
@@ -454,7 +473,8 @@ export function useAsyncScrape(options: UseAsyncScrapeOptions = {}) {
   )
 
   const startAsyncScrape = useCallback(
-    (keywordId: string) => startJob(keywordId, "scrape"),
+    (keywordId: string, filters?: PublicationDateRange) =>
+      startJob(keywordId, "scrape", filters),
     [startJob]
   )
   const startAsyncAnalysis = useCallback(

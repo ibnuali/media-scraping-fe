@@ -3,7 +3,7 @@ import { MainLayout } from "@/components/main-layout"
 import { LoginPage, RegisterPage, ProfilePage } from "@/features/auth"
 import { LandingPage } from "@/features/landing"
 import { KeywordsPage } from "@/features/keywords"
-import { KeywordDashboardPage } from "@/features/keyword-dashboard"
+import { KeywordAnalyticsPage } from "@/features/keyword-dashboard"
 import { NewsPage } from "@/features/news"
 import { KeywordWorkspaceLayout } from "@/components/keyword-workspace-layout"
 import { ArticleAnalysisPage } from "@/features/news/components/ArticleAnalysisPage"
@@ -30,6 +30,10 @@ export const routes = [
     children: [
       { path: "/keywords", element: <KeywordsPage /> },
       {
+        path: "/keywords/:keywordId/analytics",
+        element: <KeywordAnalyticsPage />,
+      },
+      {
         path: "/keywords/:keywordId/news/:articleId/analysis",
         element: <ArticleAnalysisPage />,
       },
@@ -42,10 +46,6 @@ export const routes = [
       </ProtectedRoute>
     ),
     children: [
-      {
-        path: "/keywords/:keywordId",
-        element: <KeywordDashboardPage />,
-      },
       {
         path: "/keywords/:keywordId/news",
         element: <NewsPage />,
