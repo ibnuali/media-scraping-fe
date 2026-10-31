@@ -23,7 +23,8 @@ export interface NewsResponse {
   keyword_id: string // UUID
   title: string | null
   url: string
-  summary?: string
+  description?: string | null
+  summary?: string | null
   published_at?: string | null
   published_by?: string | null
   sentiment?: "positive" | "negative" | "neutral" | null
@@ -45,6 +46,7 @@ export interface PaginatedNewsResponse {
 
 // Scraping Job types
 export type ScrapingJobStatus = "pending" | "running" | "completed" | "failed"
+export type KeywordJobKind = "scrape" | "analysis"
 
 export type ScrapingJobStage =
   | "searching"

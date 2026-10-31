@@ -1,4 +1,31 @@
 [
-  { "date": "2026-09-26", "macrostructure": "Sidebar Shell", "theme": "custom", "enrichment": "none", "brief": "KeyCrawl · consistency pass across all pages inside the locked design.md — dark/light inversion fix, token cleanup, shared Wordmark/Panel/StatBand primitives", "scope": "app", "theme_axes": "dark / grotesk-sans / cool-violet" },
-  { "date": "2026-07-28", "macrostructure": "Sidebar Shell", "theme": "custom", "enrichment": "none", "brief": "KeyCrawl · keyword tracking tool · Bruno-inspired dark utilitarian redesign", "scope": "app", "theme_axes": "dark / grotesk-sans / cool-violet" }
+  {
+    "date": "2026-10-31",
+    "macrostructure": "Workbench",
+    "theme": "custom",
+    "theme_axes": "dark / grotesk-sans / cool-violet",
+    "enrichment": "none",
+    "nav": "N9 edge-aligned utility bar",
+    "footer": "Ft2 inline data status",
+    "brief": "KeyCrawl \u00b7 two-panel keyword/news workspace and focused article analysis reader",
+    "scope": "keywords workspace"
+  },
+  {
+    "date": "2026-09-26",
+    "macrostructure": "Sidebar Shell",
+    "theme": "custom",
+    "enrichment": "none",
+    "brief": "KeyCrawl \u00b7 consistency pass across all pages inside the locked design.md \u2014 dark/light inversion fix, token cleanup, shared Wordmark/Panel/StatBand primitives",
+    "scope": "app",
+    "theme_axes": "dark / grotesk-sans / cool-violet"
+  },
+  {
+    "date": "2026-07-28",
+    "macrostructure": "Sidebar Shell",
+    "theme": "custom",
+    "enrichment": "none",
+    "brief": "KeyCrawl \u00b7 keyword tracking tool \u00b7 Bruno-inspired dark utilitarian redesign",
+    "scope": "app",
+    "theme_axes": "dark / grotesk-sans / cool-violet"
+  }
 ]

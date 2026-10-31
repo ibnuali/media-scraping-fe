@@ -4,10 +4,12 @@
  * pre-emit critique: P4 H4 E4 S4 R4 V4
  */
 
+@import "../tokens.css" layer(tokens);
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/inter";
+@import "./features/keywords/workspace.css";
 
 @custom-variant dark (&:is(.dark *));
 
