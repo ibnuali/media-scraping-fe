@@ -1,9 +1,4 @@
-import {
-  CheckCircle,
-  Circle,
-  Loader2,
-  XCircle,
-} from "lucide-react"
+import { CheckCircle, Circle, Loader2, XCircle } from "lucide-react"
 import { Panel, PanelBody, PanelHead } from "@/components/panel"
 import { cn } from "@/lib/utils"
 import type { ScrapeJob } from "@/hooks/use-async-scrape"
@@ -49,9 +44,15 @@ export function ScrapingProgressSection({
     return null
   }
 
-  const progressPercent = scrapeJob?.progress
-    ? Math.round((scrapeJob.progress.current / scrapeJob.progress.total) * 100)
-    : 0
+  const progressPercent =
+    scrapeJob?.progress && scrapeJob.progress.total > 0
+      ? Math.min(
+          100,
+          Math.round(
+            (scrapeJob.progress.current / scrapeJob.progress.total) * 100
+          )
+        )
+      : 0
 
   return (
     <Panel>
@@ -79,6 +80,14 @@ export function ScrapingProgressSection({
       />
 
       <PanelBody className="space-y-4">
+        {scrapeJob?.analysisAttempted !== undefined && (
+          <p role="status" className="text-sm text-muted-foreground">
+            AI: {scrapeJob.analysisAttempted} attempted,{" "}
+            {scrapeJob.analysisFailed ?? 0} failed.
+            {!!scrapeJob.analysisFailed &&
+              " Collected articles are retained; retry analysis from Corpus."}
+          </p>
+        )}
         {(isRunning || isCompleted) && scrapeJob?.progress && (
           <div>
             <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
@@ -90,7 +99,7 @@ export function ScrapingProgressSection({
                 style={{ transform: `scaleX(${progressPercent / 100})` }}
               />
             </div>
-            <p className="mt-1.5 text-right font-mono text-[11px] tabular-nums text-ink-3">
+            <p className="mt-1.5 text-right font-mono text-[11px] text-ink-3 tabular-nums">
               {scrapeJob.progress.current} / {scrapeJob.progress.total} pages
             </p>
           </div>
@@ -98,7 +107,9 @@ export function ScrapingProgressSection({
 
         <ol className="space-y-0">
           {stages.map((stage, index) => {
-            const isDone = index < currentStageIndex || (stage.id === "completed" && index === currentStageIndex)
+            const isDone =
+              index < currentStageIndex ||
+              (stage.id === "completed" && index === currentStageIndex)
             const isCurrent = index === currentStageIndex && !isDone
             const isFailedHere = isFailed && index === currentStageIndex
 
@@ -145,7 +156,7 @@ export function ScrapingProgressSection({
                     {isCurrent &&
                       scrapeJob?.progress &&
                       (stage.id === "scraping" || stage.id === "analyzing") && (
-                        <span className="font-mono text-[11px] tabular-nums text-ink-3">
+                        <span className="font-mono text-[11px] text-ink-3 tabular-nums">
                           {scrapeJob.progress.current}/
                           {scrapeJob.progress.total}
                         </span>

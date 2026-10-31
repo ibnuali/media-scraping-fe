@@ -6,7 +6,11 @@ import {
   clearJobProgress,
   type ScrapingProgressState,
 } from "@/hooks/use-scraping-progress-websocket"
-import type { ScrapingJobResponse, ScrapingJobStatus } from "@/types/keyword"
+import type {
+  ScrapeDateRange,
+  ScrapingJobResponse,
+  ScrapingJobStatus,
+} from "@/types/keyword"
 
 interface UseAsyncScrapeOptions {
   onComplete?: (job: ScrapingJobResponse, keywordId: string) => void
@@ -25,6 +29,8 @@ export interface ScrapeJob {
     | "completed"
     | "failed"
   progress: { current: number; total: number } | null
+  analysisAttempted?: number
+  analysisFailed?: number
   currentUrl?: string
   currentTitle?: string
   error: string | null
@@ -214,6 +220,8 @@ export function useAsyncScrape(options: UseAsyncScrapeOptions = {}) {
           keywordId,
           status: progress.status,
           progress: progress.progress,
+          analysisAttempted: progress.analysisAttempted,
+          analysisFailed: progress.analysisFailed,
           currentUrl: progress.currentUrl,
           currentTitle: progress.currentTitle,
           error: progress.error || null,
@@ -307,16 +315,18 @@ export function useAsyncScrape(options: UseAsyncScrapeOptions = {}) {
         })
         queryClient.invalidateQueries({ queryKey: ["keywords", keywordId] })
 
-        // Clear completed/failed job from UI after 3 seconds
+        queryClient.invalidateQueries({ queryKey: ["datasets"] })
+
+        // Keep analysis failure information visible longer.
         if (job.status === "completed" || job.status === "failed") {
           setTimeout(() => {
             setJobs((prev) => {
               const next = new Map(prev)
-              next.delete(keywordId)
+              if (next.get(keywordId)?.jobId === jobId) next.delete(keywordId)
               saveJobs(Array.from(next.values()))
               return next
             })
-          }, 3000)
+          }, 15000)
         }
       } catch (err) {
         console.error("[AsyncScrape] Error fetching job status:", err)
@@ -362,57 +372,60 @@ export function useAsyncScrape(options: UseAsyncScrapeOptions = {}) {
     [jobs]
   )
 
-  const startAsyncScrape = useCallback(async (keywordId: string) => {
-    // Set initial state - no stage yet, waiting for WebSocket events
-    const initialState: ScrapeJob = {
-      jobId: "",
-      keywordId,
-      status: "pending",
-      progress: null,
-      error: null,
-    }
-    setJobs((prev) => {
-      const next = new Map(prev)
-      next.set(keywordId, initialState)
-      return next
-    })
-
-    try {
-      const response = await keywordsApi.scrape(keywordId)
-
-      // Map job ID to keyword ID for WebSocket updates
-      jobToKeywordRef.current.set(response.job_id, keywordId)
-
-      const jobState: ScrapeJob = {
-        jobId: response.job_id,
+  const startAsyncScrape = useCallback(
+    async (keywordId: string, dateRange?: ScrapeDateRange) => {
+      // Set initial state - no stage yet, waiting for WebSocket events
+      const initialState: ScrapeJob = {
+        jobId: "",
         keywordId,
-        status: response.status,
+        status: "pending",
         progress: null,
         error: null,
       }
+      setJobs((prev) => {
+        const next = new Map(prev)
+        next.set(keywordId, initialState)
+        return next
+      })
 
-      setJobs((prev) => {
-        const next = new Map(prev)
-        next.set(keywordId, jobState)
-        saveJobs(Array.from(next.values()))
-        return next
-      })
-    } catch (err) {
-      setJobs((prev) => {
-        const next = new Map(prev)
-        next.set(keywordId, {
-          jobId: "",
+      try {
+        const response = await keywordsApi.scrape(keywordId, dateRange)
+
+        // Map job ID to keyword ID for WebSocket updates
+        jobToKeywordRef.current.set(response.job_id, keywordId)
+
+        const jobState: ScrapeJob = {
+          jobId: response.job_id,
           keywordId,
-          status: "failed",
+          status: response.status,
           progress: null,
-          error:
-            err instanceof Error ? err.message : "Failed to start scrape job",
+          error: null,
+        }
+
+        setJobs((prev) => {
+          const next = new Map(prev)
+          next.set(keywordId, jobState)
+          saveJobs(Array.from(next.values()))
+          return next
         })
-        saveJobs(Array.from(next.values()))
-        return next
-      })
-    }
-  }, [])
+      } catch (err) {
+        setJobs((prev) => {
+          const next = new Map(prev)
+          next.set(keywordId, {
+            jobId: "",
+            keywordId,
+            status: "failed",
+            progress: null,
+            error:
+              err instanceof Error ? err.message : "Failed to start scrape job",
+          })
+          saveJobs(Array.from(next.values()))
+          return next
+        })
+      }
+    },
+    []
+  )
 
   const cancelPolling = useCallback(
     (keywordId: string) => {

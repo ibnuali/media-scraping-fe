@@ -1,3 +1,4 @@
+import { CorpusPage } from "@/features/datasets/components/CorpusPage"
 import { ProtectedRoute } from "@/components/protected-route"
 import { MainLayout } from "@/components/main-layout"
 import { LoginPage, RegisterPage, ProfilePage } from "@/features/auth"
@@ -26,6 +27,7 @@ export const routes = [
       </ProtectedRoute>
     ),
     children: [
+      { path: "/datasets", element: <CorpusPage /> },
       {
         path: "/keywords",
         element: <KeywordsPage />,

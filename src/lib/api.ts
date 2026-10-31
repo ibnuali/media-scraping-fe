@@ -82,7 +82,8 @@ async function doRefreshAccessToken(): Promise<string | null> {
 // Base fetch wrapper with auth
 export async function apiFetch<T>(
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  responseType: "json" | "text" = "json"
 ): Promise<T> {
   const url = `${API_URL}${endpoint}`
   const headers = new Headers(options.headers)
@@ -123,14 +124,25 @@ export async function apiFetch<T>(
     const errorData = await response.json().catch(() => ({}))
     throw new ApiError(
       response.status,
-      errorData.detail || `Request failed with status ${response.status}`
+      typeof errorData.detail === "string"
+        ? errorData.detail
+        : Array.isArray(errorData.detail)
+          ? errorData.detail
+              .map((item: { msg?: string }) => item.msg || "Invalid input")
+              .join("; ")
+          : `Request failed with status ${response.status}`
     )
   }
 
   // Handle empty responses (e.g. 204 No Content)
   const text = await response.text()
+  if (responseType === "text") return text as T
   if (!text) return undefined as T
-  return JSON.parse(text) as T
+  try {
+    return JSON.parse(text) as T
+  } catch {
+    throw new ApiError(response.status, "Malformed response from server")
+  }
 }
 
 // Auth API
@@ -253,12 +265,20 @@ export const keywordsApi = {
     })
   },
 
-  scrape: async (id: string) => {
+  scrape: async (
+    id: string,
+    dateRange?: import("@/types/keyword").ScrapeDateRange
+  ) => {
+    const body: import("@/types/keyword").ScrapeDateRange = {}
+    if (dateRange?.start_date) body.start_date = dateRange.start_date
+    if (dateRange?.end_date) body.end_date = dateRange.end_date
+
+    const options: RequestInit = { method: "POST" }
+    if (body.start_date || body.end_date) options.body = JSON.stringify(body)
+
     return apiFetch<import("@/types/keyword").ScrapingJobStartResponse>(
       `/keywords/${id}/scrape`,
-      {
-        method: "POST",
-      }
+      options
     )
   },
 
