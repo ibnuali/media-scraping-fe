@@ -27,10 +27,13 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
     const data = payload[0]
     return (
       <div className="rounded-md border border-border bg-popover px-3 py-2">
-        <p className="text-[13px] font-medium" style={{ color: data.payload.fill }}>
+        <p
+          className="text-[13px] font-medium"
+          style={{ color: data.payload.fill }}
+        >
           {data.name}
         </p>
-        <p className="font-mono text-[11px] tabular-nums text-ink-2">
+        <p className="font-mono text-[11px] text-ink-2 tabular-nums">
           {data.value} articles
         </p>
       </div>
@@ -59,7 +62,7 @@ export function SentimentChart({
           <Minus className="mx-auto mb-2 size-7 text-ink-3" />
           <p className="text-[13px] text-ink-2">No sentiment data yet</p>
           <p className="mt-1 font-mono text-[11px] text-ink-3">
-            scrape some articles to see analytics
+            run optional sentiment analysis to see analytics
           </p>
         </div>
       </div>
@@ -94,7 +97,7 @@ export function SentimentChart({
           <span className="font-mono text-2xl font-semibold tabular-nums">
             {total}
           </span>
-          <span className="font-mono text-[11px] text-ink-3">articles</span>
+          <span className="font-mono text-[11px] text-ink-3">analyzed</span>
         </div>
       </div>
 
@@ -109,7 +112,7 @@ export function SentimentChart({
               <span className="block text-[13px] font-medium text-foreground">
                 {item.name}
               </span>
-              <span className="block font-mono text-[11px] tabular-nums text-ink-3">
+              <span className="block font-mono text-[11px] text-ink-3 tabular-nums">
                 {item.value} · {percentage(item.value)}%
               </span>
             </span>

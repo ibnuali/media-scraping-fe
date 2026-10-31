@@ -1,138 +1,58 @@
-import { useNavigate } from "react-router-dom"
-import { useQueryClient } from "@tanstack/react-query"
-import { Button } from "@/components/ui/button"
-import { Plus } from "lucide-react"
-import {
-  useKeywords,
-  useCreateKeyword,
-  useUpdateKeyword,
-  useDeleteKeyword,
-} from "../hooks/use-keywords"
-import { useKeywordDialog } from "../hooks/use-keyword-dialog"
-import { KeywordsSection } from "./KeywordsSection"
+import { useOutletContext } from "react-router-dom"
+import type { useAsyncScrape } from "@/hooks/use-async-scrape"
+import { useKeywordWorkspace } from "../hooks/use-keyword-workspace"
 import { KeywordFormModal } from "./KeywordFormModal"
-import { useAsyncScrape } from "@/hooks/use-async-scrape"
-import type {
-  KeywordCreate,
-  KeywordUpdate,
-  KeywordResponse,
-} from "@/types/keyword"
+import { KeywordPicker } from "./KeywordPicker"
+import { KeywordNewsPanel } from "./KeywordNewsPanel"
 
 export function KeywordsPage() {
-  const navigate = useNavigate()
-  const queryClient = useQueryClient()
-  const { data: keywords, isLoading, error } = useKeywords()
-  const createMutation = useCreateKeyword()
-  const updateMutation = useUpdateKeyword()
-  const deleteMutation = useDeleteKeyword()
-
-  const {
-    dialogMode,
-    editingKeyword,
-    keyword,
-    setKeyword,
-    maxResult,
-    setMaxResult,
-    formError,
-    setFormError,
-    openCreateDialog,
-    openEditDialog,
-    closeDialog,
-  } = useKeywordDialog()
-
-  const { getJob, isPolling, startAsyncScrape } = useAsyncScrape({
-    onComplete: (_job, keywordId) => {
-      queryClient.invalidateQueries({
-        queryKey: ["keywords", keywordId, "news"],
-      })
-      queryClient.invalidateQueries({ queryKey: ["keywords"] })
-    },
-  })
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setFormError("")
-
-    if (!keyword.trim()) {
-      setFormError("Keyword is required")
-      return
-    }
-
-    if (maxResult < 1 || maxResult > 100) {
-      setFormError("Max Results must be between 1 and 100")
-      return
-    }
-
-    try {
-      if (dialogMode === "create") {
-        const data: KeywordCreate = { keyword, max_result: maxResult }
-        const created = await createMutation.mutateAsync(data)
-        closeDialog()
-        navigate(`/keywords/${created.id}`)
-        return
-      } else if (dialogMode === "edit" && editingKeyword) {
-        const data: KeywordUpdate = { keyword, max_result: maxResult }
-        await updateMutation.mutateAsync({ id: editingKeyword.id, data })
-      }
-      closeDialog()
-    } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Operation failed")
-    }
-  }
-
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this keyword?")) return
-    try {
-      await deleteMutation.mutateAsync(id)
-    } catch (err) {
-      console.error("Failed to delete keyword:", err)
-    }
-  }
-
-  const handleScrape = async (kw: KeywordResponse) => {
-    await startAsyncScrape(kw.id)
-  }
-
-  const isSubmitting = createMutation.isPending || updateMutation.isPending
+  const workspace = useKeywordWorkspace()
+  const jobs = useOutletContext<ReturnType<typeof useAsyncScrape>>()
+  const { dialog, selectedKeyword } = workspace
 
   return (
-    <div className="space-y-4">
-      {/* Action row */}
-      <div className="flex items-center justify-between gap-3">
-        <p className="font-mono text-[11px] tracking-[0.12em] text-ink-3 uppercase tabular-nums">
-          {keywords ? `${keywords.length} tracked` : "loading"}
-        </p>
-        <Button onClick={openCreateDialog} className="gap-1.5">
-          <Plus className="size-4" />
-          Add keyword
-        </Button>
-      </div>
-
-      <KeywordsSection
-        keywords={keywords}
-        isLoading={isLoading}
-        error={error}
-        getJob={getJob}
-        isPolling={isPolling}
-        onEdit={openEditDialog}
-        onDelete={handleDelete}
-        onScrape={handleScrape}
-        onAdd={openCreateDialog}
-        isDeleting={deleteMutation.isPending}
+    <div className="keyword-workspace">
+      <KeywordPicker
+        keywords={workspace.filteredKeywords}
+        total={workspace.keywords.length}
+        selectedId={selectedKeyword?.id}
+        filter={workspace.filter}
+        onFilter={workspace.setFilter}
+        onSelect={workspace.selectKeyword}
+        onAdd={dialog.openCreateDialog}
+        onEdit={dialog.openEditDialog}
+        onDelete={workspace.handleDelete}
+        isDeleting={workspace.isDeleting}
+        isLoading={workspace.query.isLoading}
+        error={workspace.query.error}
+        onRetry={() => workspace.query.refetch()}
       />
-
+      <KeywordNewsPanel
+        keyword={selectedKeyword}
+        isLoadingKeywords={workspace.query.isLoading}
+        hasKeywordError={!!workspace.query.error}
+        job={selectedKeyword ? jobs.getJob(selectedKeyword.id) : undefined}
+        isBusy={selectedKeyword ? jobs.isPolling(selectedKeyword.id) : false}
+        onScrape={() => {
+          if (selectedKeyword) jobs.startAsyncScrape(selectedKeyword.id)
+        }}
+        onAnalyze={() => {
+          if (selectedKeyword) jobs.startAsyncAnalysis(selectedKeyword.id)
+        }}
+        onAdd={dialog.openCreateDialog}
+      />
       <KeywordFormModal
-        open={dialogMode !== null}
-        mode={dialogMode}
-        editingKeyword={editingKeyword}
-        keyword={keyword}
-        setKeyword={setKeyword}
-        maxResult={maxResult}
-        setMaxResult={setMaxResult}
-        formError={formError}
-        isSubmitting={isSubmitting}
-        onClose={closeDialog}
-        onSubmit={handleSubmit}
+        open={dialog.dialogMode !== null}
+        mode={dialog.dialogMode}
+        editingKeyword={dialog.editingKeyword}
+        keyword={dialog.keyword}
+        setKeyword={dialog.setKeyword}
+        maxResult={dialog.maxResult}
+        setMaxResult={dialog.setMaxResult}
+        formError={dialog.formError}
+        isSubmitting={workspace.isSubmitting}
+        onClose={dialog.closeDialog}
+        onSubmit={workspace.handleSubmit}
       />
     </div>
   )

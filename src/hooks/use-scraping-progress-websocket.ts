@@ -34,6 +34,8 @@ export interface ScrapingProgressState {
   currentUrl?: string
   currentTitle?: string
   error?: string
+  successful?: number
+  failed?: number
 }
 
 type ProgressCallback = (jobId: string, progress: ScrapingProgressState) => void
@@ -57,8 +59,8 @@ const jobToKeywordMap = new Map<string, string>()
 function handleMessage(event: MessageEvent) {
   try {
     const message:
-      | ScrapingProgressMessage
-      | { type: "connected" | "ping" | "pong" } = JSON.parse(event.data)
+      ScrapingProgressMessage | { type: "connected" | "ping" | "pong" } =
+      JSON.parse(event.data)
 
     // Handle connection/ping messages
     if (
@@ -73,8 +75,11 @@ function handleMessage(event: MessageEvent) {
       return
     }
 
-    const { job_id, event: progressEvent, data } =
-      message as ScrapingProgressMessage
+    const {
+      job_id,
+      event: progressEvent,
+      data,
+    } = message as ScrapingProgressMessage
     console.log("[ScrapingProgress]", progressEvent, { job_id, data })
 
     // Track keyword_id from data
@@ -134,7 +139,7 @@ function handleMessage(event: MessageEvent) {
         break
 
       case "result":
-        // Result comes after page is scraped (before AI analysis)
+        // Scraping stores content independently of optional analysis.
         state = {
           ...state,
           stage: "scraping",
@@ -175,6 +180,8 @@ function handleMessage(event: MessageEvent) {
           ...state,
           status: "completed",
           stage: "completed",
+          successful: (data.successful as number) || 0,
+          failed: (data.failed as number) || 0,
           progress: {
             current: (data.successful as number) + (data.failed as number) || 0,
             total: (data.total as number) || 0,
@@ -198,6 +205,8 @@ function handleMessage(event: MessageEvent) {
         break
     }
 
+    // Keep keyword identity even if an earlier event was missed.
+    state.keywordId = keywordId
     // Ensure state is always set
     if (state) {
       jobStates.set(job_id, state)

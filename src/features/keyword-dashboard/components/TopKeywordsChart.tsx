@@ -43,7 +43,7 @@ export function TopKeywordsChart({ data }: TopKeywordsChartProps) {
           <Hash className="mx-auto mb-2 size-7 text-ink-3" />
           <p className="text-[13px] text-ink-2">No matched keywords yet</p>
           <p className="mt-1 font-mono text-[11px] text-ink-3">
-            scrape some articles to see top terms
+            run optional sentiment analysis to see top terms
           </p>
         </div>
       </div>

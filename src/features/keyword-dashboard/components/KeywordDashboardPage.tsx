@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom"
-import { AlertTriangle, Loader2, Play } from "lucide-react"
+import { AlertTriangle, Loader2 } from "lucide-react"
 import { Panel, PanelBody, PanelHead } from "@/components/panel"
 import {
   useKeyword,
@@ -11,8 +11,6 @@ import { useHeader } from "@/components/main-layout"
 import { useNotificationWebSocket } from "@/hooks/use-notification-websocket"
 import { useAsyncScrape } from "@/hooks/use-async-scrape"
 import { useEffect, useState, useMemo } from "react"
-import { useQueryClient } from "@tanstack/react-query"
-import { Button } from "@/components/ui/button"
 import { DashboardStatsCards } from "./DashboardStatsCards"
 import { SentimentChart } from "./SentimentChart"
 import { TopKeywordsChart } from "./TopKeywordsChart"
@@ -20,25 +18,29 @@ import { KeywordFrequencyList } from "./KeywordFrequencyList"
 import { NewsTable } from "./NewsTable"
 import { KeywordSummarySection } from "./KeywordSummarySection"
 import { ScrapingProgressSection } from "./ScrapingProgressSection"
+import { KeywordWorkflowSection } from "./KeywordWorkflowSection"
 
 export function KeywordDashboardPage() {
   const { keywordId } = useParams<{ keywordId: string }>()
   const { setTitle } = useHeader()
   const [generatingSummary, setGeneratingSummary] = useState(false)
-  const queryClient = useQueryClient()
 
   const { data: keyword, isLoading: keywordLoading } = useKeyword(
     keywordId ?? null
   )
-  const { data: analytics, isLoading: analyticsLoading } = useKeywordAnalytics(
-    keywordId ?? null,
-    !!keywordId
-  )
+  const {
+    data: analytics,
+    isLoading: analyticsLoading,
+    error: analyticsError,
+  } = useKeywordAnalytics(keywordId ?? null, !!keywordId)
   const {
     data: newsData,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    isLoading: newsLoading,
+    error: newsError,
+    refetch: refetchNews,
   } = useNews(keywordId ?? null, !!keywordId)
   const summarizeMutation = useSummarizeKeyword()
 
@@ -48,20 +50,15 @@ export function KeywordDashboardPage() {
     return newsData.pages.flatMap((page) => page.items)
   }, [newsData])
 
-  // Async scrape hook for tracking progress
-  const { getJob, startAsyncScrape, isPolling } = useAsyncScrape({
-    onComplete: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["keywords", keywordId, "analytics"],
-      })
-      queryClient.invalidateQueries({
-        queryKey: ["keywords", keywordId, "news"],
-      })
-    },
-  })
+  const { getJob, startAsyncScrape, startAsyncAnalysis, isPolling } =
+    useAsyncScrape()
 
   const scrapeJob = keywordId ? getJob(keywordId) : undefined
-  const isScraping = keywordId ? isPolling(keywordId) : false
+  const isJobRunning = keywordId ? isPolling(keywordId) : false
+  const analyzedArticles = Object.values(analytics?.sentiment ?? {}).reduce(
+    (sum, count) => sum + count,
+    0
+  )
 
   // WebSocket callback for when summary is generated
   useNotificationWebSocket({
@@ -126,51 +123,52 @@ export function KeywordDashboardPage() {
 
   return (
     <div className="space-y-4">
-      {/* Action row */}
-      <div className="flex items-center justify-between gap-3">
-        <p className="font-mono text-[11px] tracking-[0.08em] text-ink-3">
-          last scraped ·{" "}
-          {keyword.last_scraped
-            ? new Date(keyword.last_scraped).toLocaleString()
-            : "never"}
+      {analyticsError && (
+        <p role="alert" className="text-sm text-destructive">
+          Could not load analysis counts: {analyticsError.message}. Reload the
+          page to try again.
         </p>
-        <Button onClick={handleStartScrape} disabled={isScraping} className="gap-1.5">
-          {isScraping ? (
-            <>
-              <Loader2 className="size-4 animate-spin" />
-              Scraping…
-            </>
-          ) : (
-            <>
-              <Play className="size-4" />
-              Start scrape
-            </>
-          )}
-        </Button>
-      </div>
-
-      {/* Scraping progress - show when scraping or completed/failed */}
-      {(isScraping ||
-        scrapeJob?.stage === "completed" ||
-        scrapeJob?.stage === "failed") && (
-        <ScrapingProgressSection scrapeJob={scrapeJob} />
       )}
+      <KeywordWorkflowSection
+        lastScraped={keyword.last_scraped}
+        totalArticles={analytics?.total_articles ?? 0}
+        analyzedArticles={analyzedArticles}
+        isBusy={isJobRunning || generatingSummary}
+        job={scrapeJob}
+        onScrape={handleStartScrape}
+        onAnalyze={() => {
+          if (keywordId) startAsyncAnalysis(keywordId)
+        }}
+      />
+
+      {scrapeJob && <ScrapingProgressSection scrapeJob={scrapeJob} />}
 
       <DashboardStatsCards
         totalArticles={analytics?.total_articles ?? 0}
+        pendingAnalysis={Math.max(
+          0,
+          (analytics?.total_articles ?? 0) - analyzedArticles
+        )}
         positiveSentiment={analytics?.sentiment?.positive ?? 0}
         negativeSentiment={analytics?.sentiment?.negative ?? 0}
       />
 
       <KeywordSummarySection
         keyword={keyword}
-        isGenerating={generatingSummary}
+        isGenerating={
+          generatingSummary ||
+          (isJobRunning && scrapeJob?.stage === "summarizing")
+        }
+        canGenerate={analyzedArticles > 0 && !isJobRunning}
         onRegenerate={handleRegenerateSummary}
       />
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Panel>
-          <PanelHead title="Sentiment distribution" hint="across all articles" />
+          <PanelHead
+            title="Sentiment distribution"
+            hint={`${analyzedArticles} analyzed articles`}
+          />
           <PanelBody>
             <SentimentChart
               positive={analytics?.sentiment?.positive ?? 0}
@@ -192,6 +190,9 @@ export function KeywordDashboardPage() {
 
       <NewsTable
         articles={articles}
+        isLoading={newsLoading}
+        error={newsError}
+        onRetry={() => refetchNews()}
         hasNextPage={hasNextPage ?? false}
         isFetchingNextPage={isFetchingNextPage}
         onLoadMore={fetchNextPage}

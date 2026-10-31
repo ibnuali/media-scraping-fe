@@ -262,6 +262,13 @@ export const keywordsApi = {
     )
   },
 
+  analyze: async (id: string) => {
+    return apiFetch<import("@/types/keyword").ScrapingJobStartResponse>(
+      `/keywords/${id}/analyze`,
+      { method: "POST" }
+    )
+  },
+
   getScrapeJob: async (jobId: string) => {
     return apiFetch<import("@/types/keyword").ScrapingJobResponse>(
       `/keywords/scrape-jobs/${jobId}`

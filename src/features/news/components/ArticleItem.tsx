@@ -1,16 +1,12 @@
+import { formatNewsDate } from "@/lib/utils"
 import { ExternalLink, Globe, Clock } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { SentimentBadge } from "./SentimentBadge"
+import { ArticleContentDialog } from "./ArticleContentDialog"
 import type { NewsItem } from "@/types/keyword"
 
 interface ArticleItemProps {
   article: NewsItem
 }
-
-const sentimentStyles = {
-  positive: "border-success/30 bg-success/10 text-success",
-  negative: "border-destructive/30 bg-destructive/10 text-destructive",
-  neutral: "border-border bg-muted text-ink-2",
-} as const
 
 export function ArticleItem({ article }: ArticleItemProps) {
   const dateValue = article.published_at || article.scraped_at
@@ -32,35 +28,29 @@ export function ArticleItem({ article }: ArticleItemProps) {
             <h3 className="line-clamp-2 text-[13px] leading-snug font-medium text-foreground transition-colors group-hover:text-primary">
               {article.title || article.url}
             </h3>
-            <ExternalLink className="mt-0.5 size-3.5 shrink-0 text-ink-3 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100" />
+            <ExternalLink className="mt-0.5 size-3.5 shrink-0 text-ink-3 opacity-0 transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100" />
           </div>
 
-          {article.summary && (
+          {(article.summary || article.description) && (
             <p className="mt-1.5 line-clamp-2 text-[13px] leading-relaxed text-ink-2">
-              {article.summary}
+              {article.summary || article.description}
             </p>
           )}
 
-          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] tabular-nums text-ink-3">
+          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] text-ink-3 tabular-nums">
             {dateValue && (
               <span className="inline-flex items-center gap-1">
                 <Clock className="size-3" />
-                {new Date(dateValue).toLocaleDateString()}
+                {formatNewsDate(dateValue)}
               </span>
             )}
-            {article.sentiment && (
-              <span
-                className={cn(
-                  "inline-flex items-center rounded-sm border px-1.5 capitalize",
-                  sentimentStyles[article.sentiment]
-                )}
-              >
-                {article.sentiment}
-              </span>
-            )}
+            <SentimentBadge sentiment={article.sentiment} />
           </div>
         </div>
       </a>
+      <div className="border-t border-border px-3 py-1">
+        <ArticleContentDialog article={article} />
+      </div>
     </article>
   )
 }

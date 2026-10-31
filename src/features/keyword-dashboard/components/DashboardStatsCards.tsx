@@ -1,26 +1,33 @@
-import { Newspaper, TrendingUp, TrendingDown } from "lucide-react"
+import { Newspaper, TrendingUp, TrendingDown, BrainCircuit } from "lucide-react"
 import { StatBand } from "@/components/stat-band"
 
 interface DashboardStatsCardsProps {
+  pendingAnalysis: number
   totalArticles: number
   positiveSentiment: number
   negativeSentiment: number
 }
 
 export function DashboardStatsCards({
+  pendingAnalysis,
   totalArticles,
   positiveSentiment,
   negativeSentiment,
 }: DashboardStatsCardsProps) {
   return (
     <StatBand
-      columns={3}
+      columns={4}
       stats={[
         {
           label: "Articles",
           value: totalArticles,
           icon: Newspaper,
           tone: "accent",
+        },
+        {
+          label: "Not analyzed",
+          value: pendingAnalysis,
+          icon: BrainCircuit,
         },
         {
           label: "Positive",

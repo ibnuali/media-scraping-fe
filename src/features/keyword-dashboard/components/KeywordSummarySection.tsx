@@ -6,12 +6,14 @@ import type { KeywordResponse } from "@/types/keyword"
 interface KeywordSummarySectionProps {
   keyword: KeywordResponse
   isGenerating: boolean
+  canGenerate: boolean
   onRegenerate: () => void
 }
 
 export function KeywordSummarySection({
   keyword,
   isGenerating,
+  canGenerate,
   onRegenerate,
 }: KeywordSummarySectionProps) {
   const hasSummary = !!keyword.keyword_summary
@@ -20,13 +22,13 @@ export function KeywordSummarySection({
     <Panel>
       <PanelHead
         title="Keyword summary"
-        hint={hasSummary ? "generated from scraped articles" : "not generated"}
+        hint={hasSummary ? "generated from analyzed articles" : "not generated"}
         actions={
           <Button
             variant="outline"
             size="sm"
             onClick={onRegenerate}
-            disabled={isGenerating}
+            disabled={isGenerating || !canGenerate}
             className="gap-1.5"
           >
             {isGenerating ? (
@@ -55,7 +57,7 @@ export function KeywordSummarySection({
             <FileText className="mb-3 size-7 text-ink-3" />
             <p className="text-[13px] text-ink-2">No summary yet</p>
             <p className="mt-1 font-mono text-[11px] text-ink-3">
-              scrape some articles, then generate
+              run optional sentiment analysis to generate a summary
             </p>
           </div>
         )}

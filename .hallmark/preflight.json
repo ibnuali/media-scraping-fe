@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-31",
+  "design_system": "design.md",
+  "framework": "React 19 / Vite / Tailwind v4",
+  "genre": "modern-minimal",
+  "theme": "Bruno-inspired dark-first",
+  "fonts": {
+    "display": "Inter Variable 600",
+    "body": "Inter Variable 400",
+    "mono": "JetBrains Mono"
+  },
+  "motion": "motion-cut",
+  "spacing": "4-point named scale",
+  "sources": [
+    "design.md",
+    "tokens.css",
+    "src/index.css",
+    "package.json"
+  ]
+}

@@ -1,7 +1,11 @@
+import { formatNewsDate } from "@/lib/utils"
 import { useRef, useCallback } from "react"
 import { ExternalLink, Loader2, Newspaper } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Button } from "@/components/ui/button"
 import { Panel, PanelHead } from "@/components/panel"
-import { cn } from "@/lib/utils"
+import { SentimentBadge } from "@/features/news/components/SentimentBadge"
+import { ArticleContentDialog } from "@/features/news/components/ArticleContentDialog"
 import type { NewsItem } from "@/types/keyword"
 import {
   Table,
@@ -13,34 +17,19 @@ import {
 } from "@/components/ui/table"
 
 interface NewsTableProps {
+  isLoading: boolean
+  error: Error | null
+  onRetry: () => void
   articles: NewsItem[]
   hasNextPage: boolean
   isFetchingNextPage: boolean
   onLoadMore: () => void
 }
 
-const sentimentStyles = {
-  positive: "border-success/30 bg-success/10 text-success",
-  negative: "border-destructive/30 bg-destructive/10 text-destructive",
-  neutral: "border-border bg-muted text-ink-2",
-} as const
-
-function SentimentBadge({ sentiment }: { sentiment: NewsItem["sentiment"] }) {
-  if (!sentiment) return <span className="text-ink-3">—</span>
-
-  return (
-    <span
-      className={cn(
-        "inline-flex items-center rounded-sm border px-1.5 py-0.5 font-mono text-[11px] capitalize",
-        sentimentStyles[sentiment]
-      )}
-    >
-      {sentiment}
-    </span>
-  )
-}
-
 export function NewsTable({
+  isLoading,
+  error,
+  onRetry,
   articles,
   hasNextPage,
   isFetchingNextPage,
@@ -69,6 +58,33 @@ export function NewsTable({
     [hasNextPage, isFetchingNextPage, onLoadMore]
   )
 
+  if (isLoading) {
+    return (
+      <Panel>
+        <PanelHead title="Recent news" hint="loading articles" />
+        <div className="space-y-3 p-4">
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+        </div>
+      </Panel>
+    )
+  }
+  if (error) {
+    return (
+      <Panel>
+        <PanelHead title="Recent news" />
+        <div className="space-y-3 p-4">
+          <p role="alert" className="text-sm text-destructive">
+            Could not load articles: {error.message}
+          </p>
+          <Button variant="outline" size="sm" onClick={onRetry}>
+            Try again
+          </Button>
+        </div>
+      </Panel>
+    )
+  }
+
   if (articles.length === 0) {
     return (
       <Panel>
@@ -88,16 +104,13 @@ export function NewsTable({
 
   return (
     <Panel>
-      <PanelHead
-        title="Recent news"
-        hint={`${articles.length} loaded`}
-      />
+      <PanelHead title="Recent news" hint={`${articles.length} loaded`} />
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead className="w-[120px]">Published</TableHead>
             <TableHead className="w-[150px]">Source</TableHead>
-            <TableHead className="min-w-[280px]">Summary</TableHead>
+            <TableHead className="min-w-[280px]">Article</TableHead>
             <TableHead className="w-[100px]">Sentiment</TableHead>
           </TableRow>
         </TableHeader>
@@ -107,9 +120,9 @@ export function NewsTable({
               key={article.id}
               ref={index === articles.length - 1 ? lastElementRef : undefined}
             >
-              <TableCell className="font-mono text-xs tabular-nums text-ink-3">
+              <TableCell className="font-mono text-xs text-ink-3 tabular-nums">
                 {article.published_at
-                  ? new Date(article.published_at).toLocaleDateString()
+                  ? formatNewsDate(article.published_at)
                   : "—"}
               </TableCell>
               <TableCell>
@@ -128,9 +141,15 @@ export function NewsTable({
                 )}
               </TableCell>
               <TableCell>
-                <p className="line-clamp-2 text-[13px] text-ink-2">
-                  {article.summary || article.title || article.url}
+                <p className="line-clamp-2 text-[13px] font-medium">
+                  {article.title || article.url}
                 </p>
+                {(article.summary || article.description) && (
+                  <p className="mt-1 line-clamp-2 text-[13px] text-ink-2">
+                    {article.summary || article.description}
+                  </p>
+                )}
+                <ArticleContentDialog article={article} />
               </TableCell>
               <TableCell>
                 <SentimentBadge sentiment={article.sentiment} />
