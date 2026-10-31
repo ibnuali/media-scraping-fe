@@ -72,8 +72,8 @@ export function NewsPage() {
             No articles yet
           </h2>
           <p className="mt-1.5 max-w-xs text-[13px] leading-relaxed text-ink-2">
-            Run a scrape from the keyword dashboard and the articles will show
-            up here.
+            Run a scrape from the news workspace and the articles will show up
+            here.
           </p>
         </div>
       </Panel>

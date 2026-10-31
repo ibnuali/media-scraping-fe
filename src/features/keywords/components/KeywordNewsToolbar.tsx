@@ -1,31 +1,27 @@
-import { BrainCircuit, Loader2, Play } from "lucide-react"
+import { Link } from "react-router-dom"
+import { BarChart3, BrainCircuit, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import type { KeywordResponse } from "@/types/keyword"
+import type { KeywordResponse, PublicationDateRange } from "@/types/keyword"
 import type { ScrapeJob } from "@/hooks/use-async-scrape"
+import { KeywordScrapeForm } from "./KeywordScrapeForm"
 
 interface KeywordNewsToolbarProps {
   keyword: KeywordResponse
   total?: number
-  analyzed?: number
   isBusy: boolean
   job?: ScrapeJob
-  onScrape: () => void
+  onScrape: (filters?: PublicationDateRange) => void
   onAnalyze: () => void
 }
 
 export function KeywordNewsToolbar({
   keyword,
   total,
-  analyzed,
   isBusy,
   job,
   onScrape,
   onAnalyze,
 }: KeywordNewsToolbarProps) {
-  const pending =
-    total != null && analyzed != null
-      ? Math.max(0, total - analyzed)
-      : undefined
   return (
     <header className="keyword-news-heading">
       <div className="keyword-news-heading-copy">
@@ -38,17 +34,20 @@ export function KeywordNewsToolbar({
         </p>
       </div>
       <div className="keyword-news-actions">
-        <Button variant="outline" onClick={onScrape} disabled={isBusy}>
-          {isBusy && job?.kind === "scrape" ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            <Play className="size-4" />
-          )}
-          {isBusy && job?.kind === "scrape" ? "Scraping…" : "Scrape news"}
+        <Button
+          variant="outline"
+          render={
+            <Link
+              to={`/keywords/${encodeURIComponent(keyword.id)}/analytics`}
+            />
+          }
+        >
+          <BarChart3 className="size-4" />
+          Analytics
         </Button>
         <Button
           onClick={onAnalyze}
-          disabled={isBusy || pending == null || pending === 0}
+          disabled={isBusy || total == null || total === 0}
         >
           {isBusy && job?.kind === "analysis" ? (
             <Loader2 className="size-4 animate-spin" />
@@ -61,14 +60,16 @@ export function KeywordNewsToolbar({
         </Button>
       </div>
       <p className="keyword-news-analysis-note">
-        {pending == null
-          ? "Analysis counts unavailable while loading."
-          : total === 0
-            ? "Scrape news first. Sentiment analysis is optional."
-            : pending > 0
-              ? `${pending} not analyzed. Analysis is optional and uses saved content.`
-              : "All saved articles have been analyzed."}
+        {total === 0
+          ? "Scrape news first. Sentiment analysis is optional."
+          : "Sentiment analysis is optional and uses saved content. View Analytics for analysis counts."}
       </p>
+      <KeywordScrapeForm
+        key={keyword.id}
+        isBusy={isBusy}
+        isScraping={isBusy && job?.kind === "scrape"}
+        onScrape={onScrape}
+      />
     </header>
   )
 }

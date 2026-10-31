@@ -59,9 +59,13 @@ export function KeywordPickerItem({
             <Pencil />
             Edit keyword
           </DropdownMenuItem>
-          <DropdownMenuItem render={<Link to={`/keywords/${keyword.id}`} />}>
+          <DropdownMenuItem
+            render={
+              <Link to={`/keywords/${encodeURIComponent(keyword.id)}/analytics`} />
+            }
+          >
             <BarChart3 />
-            Keyword dashboard
+            Analytics
           </DropdownMenuItem>
           <DropdownMenuItem
             variant="destructive"

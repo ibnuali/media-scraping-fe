@@ -43,6 +43,12 @@ export function KeywordJobStatus({ job }: KeywordJobStatusProps) {
             ? ` · ${job.progress.current}/${job.progress.total}`
             : ""}
         </p>
+        {job.kind === "scrape" && (job.start_date || job.end_date) && (
+          <p>
+            Publication dates: {job.start_date || "Any"} –{" "}
+            {job.end_date || "Any"} (inclusive)
+          </p>
+        )}
         {failed ? (
           <p>{job.error || "Please try again."}</p>
         ) : (

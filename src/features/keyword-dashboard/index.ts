@@ -1,1 +1,1 @@
-export { KeywordDashboardPage } from "./components/KeywordDashboardPage"
+export { KeywordAnalyticsPage } from "./components/KeywordAnalyticsPage"

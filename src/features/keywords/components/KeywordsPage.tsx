@@ -33,8 +33,9 @@ export function KeywordsPage() {
         hasKeywordError={!!workspace.query.error}
         job={selectedKeyword ? jobs.getJob(selectedKeyword.id) : undefined}
         isBusy={selectedKeyword ? jobs.isPolling(selectedKeyword.id) : false}
-        onScrape={() => {
-          if (selectedKeyword) jobs.startAsyncScrape(selectedKeyword.id)
+        onScrape={(filters) => {
+          if (selectedKeyword)
+            jobs.startAsyncScrape(selectedKeyword.id, filters)
         }}
         onAnalyze={() => {
           if (selectedKeyword) jobs.startAsyncAnalysis(selectedKeyword.id)

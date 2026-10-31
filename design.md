@@ -56,7 +56,8 @@ Tight rhythm: --space-xs = 0.5rem, --space-sm = 0.75rem, --space-md = 1rem, --sp
 - Marketing pages MAY use enrichment (Tier-A CSS art only).
 - App pages MUST NOT use enrichment — function carries the page.
 - Content pages: typography only.
-- `/keywords`: Workbench with a top utility bar, keyword list on the left and news list on the right; no navigation sidebar. Stack the panels below 768px.
+- `/keywords`: Workbench with a top utility bar, keyword list on the left and news list on the right; no navigation sidebar. Stack the panels below 768px. Scraping offers optional inclusive publication-date bounds; keep one scrape form with the date inputs and action together, and show the requested range in job status.
+- `/keywords/:keywordId/analytics`: a dedicated analytics page in the workspace shell. Fetch keyword analytics here, with article counts, sentiment distribution, and top matched terms. The `/keywords` workspace must not fetch keyword analytics; link to this page and preserve the selected keyword when returning.
 - `/keywords/:keywordId/news/:articleId/analysis`: a focused reading page without a navigation sidebar. Show the title, summary (`-` when absent), full stored content, and sentiment when available. Preserve the selected keyword when returning to the news list.
 
 ## What pages MUST share

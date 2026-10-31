@@ -2,9 +2,8 @@ import { Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { WorkspaceState, WorkspaceLoading } from "@/components/workspace-state"
 import { useNews } from "@/features/news"
-import { useKeywordAnalytics } from "../hooks/use-keywords"
 import { ArticleAnalysisLink } from "@/features/news/components/ArticleAnalysisLink"
-import type { KeywordResponse } from "@/types/keyword"
+import type { KeywordResponse, PublicationDateRange } from "@/types/keyword"
 import type { ScrapeJob } from "@/hooks/use-async-scrape"
 import { KeywordNewsToolbar } from "./KeywordNewsToolbar"
 import { KeywordJobStatus } from "./KeywordJobStatus"
@@ -15,7 +14,7 @@ interface KeywordNewsPanelProps {
   hasKeywordError: boolean
   job?: ScrapeJob
   isBusy: boolean
-  onScrape: () => void
+  onScrape: (filters?: PublicationDateRange) => void
   onAnalyze: () => void
   onAdd: () => void
 }
@@ -31,15 +30,8 @@ export function KeywordNewsPanel({
   onAdd,
 }: KeywordNewsPanelProps) {
   const news = useNews(keyword?.id ?? null, !!keyword)
-  const analytics = useKeywordAnalytics(keyword?.id ?? null, !!keyword)
   const articles = news.data?.pages.flatMap((page) => page.items) ?? []
   const total = news.data?.pages[0]?.total
-  const analyzed = analytics.data
-    ? Object.values(analytics.data.sentiment).reduce(
-        (sum, value) => sum + value,
-        0
-      )
-    : undefined
 
   return (
     <section
@@ -69,20 +61,11 @@ export function KeywordNewsPanel({
           <KeywordNewsToolbar
             keyword={keyword}
             total={total}
-            analyzed={analyzed}
             job={job}
             isBusy={isBusy}
             onScrape={onScrape}
             onAnalyze={onAnalyze}
           />
-          {analytics.error && (
-            <div className="workspace-inline-error" role="alert">
-              Could not load analysis counts.{" "}
-              <Button variant="link" onClick={() => analytics.refetch()}>
-                Try again
-              </Button>
-            </div>
-          )}
           {job && <KeywordJobStatus job={job} />}
           <div className="keyword-news-scroll" key={keyword.id}>
             {news.isLoading ? (
@@ -100,12 +83,8 @@ export function KeywordNewsPanel({
             ) : !articles.length ? (
               <WorkspaceState
                 title="No saved articles yet"
-                description="Scrape this keyword to collect news. You can read full content before choosing to analyze it."
-              >
-                <Button variant="outline" onClick={onScrape} disabled={isBusy}>
-                  {isBusy ? "Scraping…" : "Scrape news"}
-                </Button>
-              </WorkspaceState>
+                description="Choose optional publication dates above, then scrape this keyword to collect news."
+              />
             ) : (
               <>
                 <div className="keyword-news-list-heading">
