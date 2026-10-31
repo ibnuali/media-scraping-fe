@@ -1,7 +1,6 @@
-import { useNavigate } from "react-router-dom"
+import { useState } from "react"
+import { Link, useSearchParams } from "react-router-dom"
 import { useQueryClient } from "@tanstack/react-query"
-import { Button } from "@/components/ui/button"
-import { Plus } from "lucide-react"
 import {
   useKeywords,
   useCreateKeyword,
@@ -9,22 +8,34 @@ import {
   useDeleteKeyword,
 } from "../hooks/use-keywords"
 import { useKeywordDialog } from "../hooks/use-keyword-dialog"
-import { KeywordsSection } from "./KeywordsSection"
+import { NewsFeed } from "@/features/news/components/NewsFeed"
+import { KeywordWorkspaceSidebar } from "./KeywordWorkspaceSidebar"
+import { KeywordFeedToolbar } from "./KeywordFeedToolbar"
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog"
 import { KeywordFormModal } from "./KeywordFormModal"
 import { useAsyncScrape } from "@/hooks/use-async-scrape"
+import { ScrapeDateRangeDialog } from "@/components/scrape-date-range-dialog"
 import type {
   KeywordCreate,
   KeywordUpdate,
   KeywordResponse,
+  ScrapeDateRange,
 } from "@/types/keyword"
 
 export function KeywordsPage() {
-  const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const queryClient = useQueryClient()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const { data: keywords, isLoading, error } = useKeywords()
   const createMutation = useCreateKeyword()
   const updateMutation = useUpdateKeyword()
   const deleteMutation = useDeleteKeyword()
+  const [scrapeTarget, setScrapeTarget] = useState<KeywordResponse | null>(null)
 
   const {
     dialogMode,
@@ -68,7 +79,7 @@ export function KeywordsPage() {
         const data: KeywordCreate = { keyword, max_result: maxResult }
         const created = await createMutation.mutateAsync(data)
         closeDialog()
-        navigate(`/keywords/${created.id}`)
+        setSearchParams({ keyword: created.id })
         return
       } else if (dialogMode === "edit" && editingKeyword) {
         const data: KeywordUpdate = { keyword, max_result: maxResult }
@@ -89,36 +100,93 @@ export function KeywordsPage() {
     }
   }
 
-  const handleScrape = async (kw: KeywordResponse) => {
-    await startAsyncScrape(kw.id)
+  const handleScrapeStart = (kw: KeywordResponse, range: ScrapeDateRange) => {
+    setScrapeTarget(null)
+    void startAsyncScrape(kw.id, range)
   }
 
   const isSubmitting = createMutation.isPending || updateMutation.isPending
 
-  return (
-    <div className="space-y-4">
-      {/* Action row */}
-      <div className="flex items-center justify-between gap-3">
-        <p className="font-mono text-[11px] tracking-[0.12em] text-ink-3 uppercase tabular-nums">
-          {keywords ? `${keywords.length} tracked` : "loading"}
-        </p>
-        <Button onClick={openCreateDialog} className="gap-1.5">
-          <Plus className="size-4" />
-          Add keyword
-        </Button>
-      </div>
+  const selectedId = searchParams.get("keyword")
+  const selected =
+    keywords?.find((item) => item.id === selectedId) ?? keywords?.[0] ?? null
+  const job = selected ? getJob(selected.id) : undefined
 
-      <KeywordsSection
-        keywords={keywords}
-        isLoading={isLoading}
-        error={error}
-        getJob={getJob}
-        isPolling={isPolling}
-        onEdit={openEditDialog}
-        onDelete={handleDelete}
-        onScrape={handleScrape}
-        onAdd={openCreateDialog}
-        isDeleting={deleteMutation.isPending}
+  const sidebarProps = {
+    keywords,
+    selectedId: selected?.id,
+    isLoading,
+    error,
+    isPolling,
+    onAdd: () => {
+      setSidebarOpen(false)
+      openCreateDialog()
+    },
+    onSelect: (id: string) => {
+      setSearchParams({ keyword: id })
+      setSidebarOpen(false)
+    },
+  }
+
+  return (
+    <div className="flex h-full min-h-0">
+      <aside className="hidden w-64 shrink-0 border-r border-border md:block xl:w-72">
+        <KeywordWorkspaceSidebar {...sidebarProps} />
+      </aside>
+      <Dialog open={sidebarOpen} onOpenChange={setSidebarOpen}>
+        <DialogContent
+          showCloseButton
+          className="top-0 bottom-0 left-0 flex h-dvh max-h-dvh w-72 max-w-[85vw] translate-x-0 translate-y-0 gap-0 rounded-none border-y-0 border-l-0 p-0 sm:max-w-72"
+        >
+          <DialogTitle className="sr-only">Keywords</DialogTitle>
+          <DialogDescription className="sr-only">
+            Choose a keyword or create a new one.
+          </DialogDescription>
+          <KeywordWorkspaceSidebar {...sidebarProps} />
+        </DialogContent>
+      </Dialog>
+      <section
+        className="flex min-h-0 min-w-0 flex-1 flex-col"
+        aria-label="News feed"
+      >
+        <KeywordFeedToolbar
+          keyword={selected}
+          isScraping={selected ? isPolling(selected.id) : false}
+          isDeleting={deleteMutation.isPending}
+          onOpenSidebar={() => setSidebarOpen(true)}
+          onEdit={() => selected && openEditDialog(selected)}
+          onDelete={() => selected && void handleDelete(selected.id)}
+          onScrape={() => selected && setScrapeTarget(selected)}
+        />
+        {!!job?.analysisFailed && (
+          <p role="status" className="shrink-0 border-b border-border px-6 py-3 text-xs text-warning">
+            {job.analysisFailed} AI analysis attempts failed. Collected articles are retained. {" "}
+            <Link to="/datasets" className="underline">Review corpus and retry analysis</Link>
+          </p>
+        )}
+        {job?.status === "failed" && (
+          <p
+            role="alert"
+            className="shrink-0 border-b border-border px-6 py-3 text-xs text-destructive"
+          >
+            {job.error || "Scrape failed"}
+          </p>
+        )}
+        <div
+          key={selected?.id ?? "empty"}
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
+        >
+          <NewsFeed keywordId={selected?.id ?? null} />
+        </div>
+      </section>
+
+      <ScrapeDateRangeDialog
+        open={scrapeTarget !== null}
+        keyword={scrapeTarget?.keyword}
+        onClose={() => setScrapeTarget(null)}
+        onConfirm={(range) => {
+          if (scrapeTarget) handleScrapeStart(scrapeTarget, range)
+        }}
       />
 
       <KeywordFormModal

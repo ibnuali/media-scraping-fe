@@ -31,6 +31,8 @@ export interface ScrapingProgressState {
     | "completed"
     | "failed"
   progress: { current: number; total: number } | null
+  analysisAttempted?: number
+  analysisFailed?: number
   currentUrl?: string
   currentTitle?: string
   error?: string
@@ -57,8 +59,8 @@ const jobToKeywordMap = new Map<string, string>()
 function handleMessage(event: MessageEvent) {
   try {
     const message:
-      | ScrapingProgressMessage
-      | { type: "connected" | "ping" | "pong" } = JSON.parse(event.data)
+      ScrapingProgressMessage | { type: "connected" | "ping" | "pong" } =
+      JSON.parse(event.data)
 
     // Handle connection/ping messages
     if (
@@ -73,8 +75,11 @@ function handleMessage(event: MessageEvent) {
       return
     }
 
-    const { job_id, event: progressEvent, data } =
-      message as ScrapingProgressMessage
+    const {
+      job_id,
+      event: progressEvent,
+      data,
+    } = message as ScrapingProgressMessage
     console.log("[ScrapingProgress]", progressEvent, { job_id, data })
 
     // Track keyword_id from data
@@ -173,6 +178,14 @@ function handleMessage(event: MessageEvent) {
         console.log("[ScrapingProgress] Received completed event:", data)
         state = {
           ...state,
+          analysisAttempted:
+            typeof data.analysis_attempted === "number"
+              ? data.analysis_attempted
+              : undefined,
+          analysisFailed:
+            typeof data.analysis_failed === "number"
+              ? data.analysis_failed
+              : undefined,
           status: "completed",
           stage: "completed",
           progress: {

@@ -13,6 +13,7 @@ import { useAsyncScrape } from "@/hooks/use-async-scrape"
 import { useEffect, useState, useMemo } from "react"
 import { useQueryClient } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
+import { ScrapeDateRangeDialog } from "@/components/scrape-date-range-dialog"
 import { DashboardStatsCards } from "./DashboardStatsCards"
 import { SentimentChart } from "./SentimentChart"
 import { TopKeywordsChart } from "./TopKeywordsChart"
@@ -25,6 +26,7 @@ export function KeywordDashboardPage() {
   const { keywordId } = useParams<{ keywordId: string }>()
   const { setTitle } = useHeader()
   const [generatingSummary, setGeneratingSummary] = useState(false)
+  const [scrapeDialogOpen, setScrapeDialogOpen] = useState(false)
   const queryClient = useQueryClient()
 
   const { data: keyword, isLoading: keywordLoading } = useKeyword(
@@ -97,7 +99,7 @@ export function KeywordDashboardPage() {
 
   const handleStartScrape = () => {
     if (keywordId) {
-      startAsyncScrape(keywordId)
+      setScrapeDialogOpen(true)
     }
   }
 
@@ -134,7 +136,11 @@ export function KeywordDashboardPage() {
             ? new Date(keyword.last_scraped).toLocaleString()
             : "never"}
         </p>
-        <Button onClick={handleStartScrape} disabled={isScraping} className="gap-1.5">
+        <Button
+          onClick={handleStartScrape}
+          disabled={isScraping}
+          className="gap-1.5"
+        >
           {isScraping ? (
             <>
               <Loader2 className="size-4 animate-spin" />
@@ -148,6 +154,16 @@ export function KeywordDashboardPage() {
           )}
         </Button>
       </div>
+
+      <ScrapeDateRangeDialog
+        open={scrapeDialogOpen}
+        keyword={keyword.keyword}
+        onClose={() => setScrapeDialogOpen(false)}
+        onConfirm={(range) => {
+          setScrapeDialogOpen(false)
+          void startAsyncScrape(keyword.id, range)
+        }}
+      />
 
       {/* Scraping progress - show when scraping or completed/failed */}
       {(isScraping ||
@@ -170,7 +186,10 @@ export function KeywordDashboardPage() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Panel>
-          <PanelHead title="Sentiment distribution" hint="across all articles" />
+          <PanelHead
+            title="Sentiment distribution"
+            hint="across all articles"
+          />
           <PanelBody>
             <SentimentChart
               positive={analytics?.sentiment?.positive ?? 0}

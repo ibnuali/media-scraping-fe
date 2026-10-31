@@ -54,6 +54,12 @@ export type ScrapingJobStage =
   | "completed"
   | "failed"
 
+// Inclusive publication dates (YYYY-MM-DD, WIB)
+export interface ScrapeDateRange {
+  start_date?: string | null
+  end_date?: string | null
+}
+
 export interface ScrapingJobResponse {
   id: string // UUID
   keyword_id: string // UUID
@@ -63,6 +69,8 @@ export interface ScrapingJobResponse {
   successful: number
   failed: number
   error_message: string | null
+  start_date: string | null
+  end_date: string | null
   started_at: string | null
   completed_at: string | null
   created_at: string

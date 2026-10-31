@@ -9,7 +9,8 @@ modern-minimal (developer tool, utilitarian)
 
 ## Macrostructure family
 - Marketing pages: Marquee Hero (dark, typographic, monospace accents)
-- App pages: Sidebar shell + stat-card headers + list/table content
+- Keyword workspace: full-height two-panel shell; 256–288px keyword sidebar with search and account footer, one 56px feed toolbar, independently scrolling news list. On mobile the keyword sidebar opens as a modal drawer.
+- Analytics and account pages: sidebar shell + compact headers + list/table content
 - Content pages: List-first, compact rows
 
 ## Theme (Bruno-inspired, dark-first)

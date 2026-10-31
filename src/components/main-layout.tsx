@@ -10,6 +10,7 @@ import {
   ChevronLeft,
   ChevronRight,
   SearchCode,
+  Database,
   ArrowLeft,
   User,
   AlertTriangle,
@@ -45,6 +46,7 @@ export function useHeader() {
 
 // Page header configuration for static routes
 const pageHeaders: Record<string, { title: string; description: string }> = {
+  "/datasets": { title: "Corpus & datasets", description: "Audit, freeze and evaluate temporal evidence" },
   "/keywords": {
     title: "Keywords",
     description: "Manage your tracked keywords",
@@ -61,6 +63,7 @@ export function MainLayout() {
   const navigate = useNavigate()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const location = useLocation()
+  const isWorkspace = location.pathname === "/keywords"
 
   // Dynamic header state (for child pages to override)
   const [dynamicTitle, setDynamicTitle] = useState<string | null>(null)
@@ -104,11 +107,32 @@ export function MainLayout() {
     navigate("/keywords")
   }
 
-  const navItems = [{ to: "/keywords", label: "Keywords", icon: SearchCode }]
+  const navItems = [{ to: "/keywords", label: "Keywords", icon: SearchCode }, { to: "/datasets", label: "Corpus & datasets", icon: Database }]
 
   const headerContextValue: HeaderContextType = {
     setTitle: setDynamicTitle,
     setDescription: setDynamicDescription,
+  }
+
+  if (isWorkspace) {
+    return (
+      <HeaderContext.Provider value={headerContextValue}>
+        <main className="flex h-dvh min-h-0 flex-col overflow-hidden bg-background">
+          {user && !isActive && (
+            <div
+              role="status"
+              className="shrink-0 border-b border-warning/20 bg-warning/10 px-4 py-2 text-xs text-warning"
+            >
+              Account pending activation. Contact mail@ibnua.li to activate your
+              account.
+            </div>
+          )}
+          <div className="min-h-0 flex-1">
+            <Outlet />
+          </div>
+        </main>
+      </HeaderContext.Provider>
+    )
   }
 
   return (

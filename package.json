@@ -43,8 +43,9 @@
     "globals": "^17.13.0",
     "prettier": "^3.9.10",
     "prettier-plugin-tailwindcss": "^0.8.1",
-    "typescript": "~7.0.2",
+    "typescript": "npm:@typescript/typescript6@^6.0.2",
     "typescript-eslint": "^8.72.1",
+    "typescript7": "npm:typescript@~7.0.2",
     "vite": "^8.3.5"
   }
 }
