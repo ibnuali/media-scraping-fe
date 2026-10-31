@@ -14,22 +14,22 @@ A React frontend for keyword tracking and news scraping.
 
 ```bash
 # Install dependencies
-bun install
+pnpm install
 
 # Start dev server
-bun dev
+pnpm dev
 
 # Build for production
-bun build
+pnpm build
 
 # Type check
-bun typecheck
+pnpm typecheck
 
 # Lint
-bun lint
+pnpm lint
 
 # Format
-bun format
+pnpm format
 ```
 
 ## Environment Variables
@@ -73,7 +73,7 @@ docker run -p 3000:80 key-crawl-fe
 ## Adding shadcn Components
 
 ```bash
-bunx shadcn@latest add <component-name>
+pnpm dlx shadcn@latest add <component-name>
 ```
 
 Components are placed in `src/components/ui/`. Import with:

@@ -1,12 +1,12 @@
 # Build stage
-FROM oven/bun:1 AS builder
+FROM node:24-alpine AS builder
 WORKDIR /app
 
 # Copy package files
-COPY package.json bun.lock* ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 # Install dependencies
-RUN bun install --frozen-lockfile
+RUN corepack enable && pnpm install --frozen-lockfile
 
 # Copy source
 COPY . .
@@ -20,7 +20,7 @@ ENV VITE_API_URL=${VITE_API_URL}
 ENV VITE_WS_URL=${VITE_WS_URL}
 
 # Build the app
-RUN bun run build
+RUN pnpm run build
 
 # Production stage
 FROM nginx:alpine AS production

@@ -59,11 +59,11 @@ export function KeywordNewsToolbar({
             : "Analyze sentiment"}
         </Button>
       </div>
-      <p className="keyword-news-analysis-note">
-        {total === 0
-          ? "Scrape news first. Sentiment analysis is optional."
-          : "Sentiment analysis is optional and uses saved content. View Analytics for analysis counts."}
-      </p>
+      {total === 0 && (
+        <p className="keyword-news-analysis-note">
+          Scrape news first. Sentiment analysis is optional.
+        </p>
+      )}
       <KeywordScrapeForm
         key={keyword.id}
         isBusy={isBusy}

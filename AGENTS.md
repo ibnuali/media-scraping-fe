@@ -20,7 +20,7 @@ When showing how code invokes other code, including architecture traces and proj
 
 ## Development and verification
 
-- The scripts are defined in `package.json`. The README and Dockerfile use Bun: `bun run dev`, `bun run build`, and `bun run lint`.
+- The scripts are defined in `package.json`. The README and Dockerfile use pnpm: `pnpm dev`, `pnpm build`, and `pnpm lint`.
 - Run the build and lint checks as appropriate for code changes. The build runs TypeScript project checks before Vite; the root `typecheck` script alone does not check the referenced projects.
 - No test script or test suite is currently configured. Verify affected behavior with the most relevant available checks, and report any limitations.
 - `format` writes to every TypeScript file; avoid running it across unrelated changes. Vite embeds `VITE_API_URL` and `VITE_WS_URL` at build time; see `.env.example`.
