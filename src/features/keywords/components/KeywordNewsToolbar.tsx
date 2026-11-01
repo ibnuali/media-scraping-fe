@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import { BarChart3, BrainCircuit, Loader2 } from "lucide-react"
+import { BarChart3 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { KeywordResponse, PublicationDateRange } from "@/types/keyword"
 import type { ScrapeJob } from "@/hooks/use-async-scrape"
@@ -11,7 +11,6 @@ interface KeywordNewsToolbarProps {
   isBusy: boolean
   job?: ScrapeJob
   onScrape: (filters?: PublicationDateRange) => void
-  onAnalyze: () => void
 }
 
 export function KeywordNewsToolbar({
@@ -20,7 +19,6 @@ export function KeywordNewsToolbar({
   isBusy,
   job,
   onScrape,
-  onAnalyze,
 }: KeywordNewsToolbarProps) {
   return (
     <header className="keyword-news-heading">
@@ -45,25 +43,7 @@ export function KeywordNewsToolbar({
           <BarChart3 className="size-4" />
           Analytics
         </Button>
-        <Button
-          onClick={onAnalyze}
-          disabled={isBusy || total == null || total === 0}
-        >
-          {isBusy && job?.kind === "analysis" ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            <BrainCircuit className="size-4" />
-          )}
-          {isBusy && job?.kind === "analysis"
-            ? "Analyzing…"
-            : "Analyze sentiment"}
-        </Button>
       </div>
-      {total === 0 && (
-        <p className="keyword-news-analysis-note">
-          Scrape news first. Sentiment analysis is optional.
-        </p>
-      )}
       <KeywordScrapeForm
         key={keyword.id}
         isBusy={isBusy}

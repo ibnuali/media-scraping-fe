@@ -36,6 +36,7 @@ export interface ScrapingProgressState {
   error?: string
   successful?: number
   failed?: number
+  skipped?: number
 }
 
 type ProgressCallback = (jobId: string, progress: ScrapingProgressState) => void
@@ -182,8 +183,12 @@ function handleMessage(event: MessageEvent) {
           stage: "completed",
           successful: (data.successful as number) || 0,
           failed: (data.failed as number) || 0,
+          skipped: (data.skipped as number) || 0,
           progress: {
-            current: (data.successful as number) + (data.failed as number) || 0,
+            current:
+              ((data.successful as number) || 0) +
+              ((data.failed as number) || 0) +
+              ((data.skipped as number) || 0),
             total: (data.total as number) || 0,
           },
         }

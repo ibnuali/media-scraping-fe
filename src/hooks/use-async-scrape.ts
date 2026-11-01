@@ -8,6 +8,7 @@ import {
 } from "@/hooks/use-scraping-progress-websocket"
 import type {
   KeywordJobKind,
+  KeywordJobType,
   PublicationDateRange,
   ScrapingJobResponse,
   ScrapingJobStatus,
@@ -19,9 +20,10 @@ interface UseAsyncScrapeOptions {
 }
 
 export interface ScrapeJob extends PublicationDateRange {
-  kind: KeywordJobKind
+  kind: KeywordJobType
   successful?: number
   failed?: number
+  skipped?: number
   jobId: string
   keywordId: string
   status: ScrapingJobStatus
@@ -261,6 +263,7 @@ export function useAsyncScrape(options: UseAsyncScrapeOptions = {}) {
           end_date: sameJob ? existing?.end_date : undefined,
           successful: progress.successful,
           failed: progress.failed,
+          skipped: progress.skipped,
           kind:
             progress.stage === "analyzing" || progress.stage === "summarizing"
               ? "analysis"
@@ -328,11 +331,15 @@ export function useAsyncScrape(options: UseAsyncScrapeOptions = {}) {
             stage: job.stage,
             successful: job.successful,
             failed: job.failed,
+            skipped: job.skipped,
             start_date: job.start_date ?? existing.start_date,
             end_date: job.end_date ?? existing.end_date,
             progress:
               job.total != null
-                ? { current: job.successful + job.failed, total: job.total }
+                ? {
+                    current: job.successful + job.failed + (job.skipped ?? 0),
+                    total: job.total,
+                  }
                 : existing.progress,
             error: job.error_message,
           })

@@ -39,14 +39,9 @@ export function useKeywordWorkspace() {
       dialog.setFormError("Keyword is required")
       return
     }
-    if (dialog.maxResult < 1 || dialog.maxResult > 100) {
-      dialog.setFormError("Max Results must be between 1 and 100")
-      return
-    }
     try {
       const data = {
         keyword: dialog.keyword.trim(),
-        max_result: dialog.maxResult,
       }
       if (dialog.dialogMode === "create") {
         const created = await createMutation.mutateAsync(data)

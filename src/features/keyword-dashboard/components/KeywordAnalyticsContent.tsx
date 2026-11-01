@@ -29,7 +29,7 @@ export function KeywordAnalyticsContent({
       {analyzed === 0 && analytics.top_keywords.length === 0 ? (
         <WorkspaceState
           title="No analysis yet"
-          description="Run sentiment analysis from the news workspace to see sentiment and matched terms here."
+          description="Use Analyze sentiment above to see sentiment and matched terms here."
         />
       ) : (
         <>

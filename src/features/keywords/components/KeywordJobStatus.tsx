@@ -1,5 +1,6 @@
 import { CheckCircle2, Loader2, AlertCircle } from "lucide-react"
 import type { ScrapeJob } from "@/hooks/use-async-scrape"
+import { jobKindLabels } from "../lib/job-history"
 
 interface KeywordJobStatusProps {
   job: ScrapeJob
@@ -33,7 +34,7 @@ export function KeywordJobStatus({ job }: KeywordJobStatusProps) {
       />
       <div>
         <p>
-          {job.kind === "analysis" ? "Analysis" : "Scraping"} ·{" "}
+          {jobKindLabels[job.kind]} ·{" "}
           {job.status === "pending"
             ? "Waiting for a worker"
             : job.stage
@@ -49,15 +50,12 @@ export function KeywordJobStatus({ job }: KeywordJobStatusProps) {
             {job.end_date || "Any"} (inclusive)
           </p>
         )}
-        {failed ? (
-          <p>{job.error || "Please try again."}</p>
-        ) : (
-          !running && (
-            <p>
-              {job.successful ?? 0} successful · {job.failed ?? 0} failed
-              {job.failed ? ". Run the action again to retry." : ""}
-            </p>
-          )
+        {failed && <p>{job.error || "Please try again."}</p>}
+        {(!running || job.successful != null) && (
+          <p>
+            {job.successful ?? 0} successful · {job.failed ?? 0} failed ·{" "}
+            {job.skipped ?? 0} skipped
+          </p>
         )}
       </div>
     </div>

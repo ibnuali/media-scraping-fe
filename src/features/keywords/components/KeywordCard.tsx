@@ -145,7 +145,7 @@ export function KeywordCard({
             {keyword.keyword}
           </span>
           <span className="block truncate font-mono text-[11px] text-ink-3 tabular-nums">
-            max {keyword.max_result} · {formatLastScraped(keyword.last_scraped)}
+            {formatLastScraped(keyword.last_scraped)}
           </span>
         </span>
       </button>

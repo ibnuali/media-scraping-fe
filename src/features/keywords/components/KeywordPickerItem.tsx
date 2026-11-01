@@ -39,7 +39,7 @@ export function KeywordPickerItem({
       >
         <span className="keyword-select-name">{keyword.keyword}</span>
         <span className="keyword-select-meta">
-          {formatLastScraped(keyword.last_scraped)} · max {keyword.max_result}
+          {formatLastScraped(keyword.last_scraped)}
         </span>
       </button>
       <DropdownMenu>

@@ -15,11 +15,15 @@ import {
 import { NotificationBell } from "@/features/notifications"
 import { useNotificationWebSocket } from "@/hooks/use-notification-websocket"
 import { showNotificationToast } from "@/features/notifications/hooks/use-notifications"
+import { useJobLogDialog } from "@/features/keywords/hooks/use-job-log-dialog"
+import { JobLogDialog } from "@/features/keywords/components/JobLogDialog"
+import { JobHistoryButton } from "@/features/keywords/components/JobHistoryButton"
 
 export function KeywordWorkspaceLayout() {
   const { user, isActive, logout } = useAuth()
   const navigate = useNavigate()
   const jobs = useAsyncScrape()
+  const logDialog = useJobLogDialog()
   const { pathname } = useLocation()
   const mainRef = useRef<HTMLElement>(null)
   useEffect(() => {
@@ -46,6 +50,7 @@ export function KeywordWorkspaceLayout() {
         <span className="workspace-header-caption">News workspace</span>
         <nav aria-label="Account" className="workspace-account">
           <ThemeToggle />
+          <JobHistoryButton onSelect={logDialog.openJobLogs} />
           <NotificationBell />
           <DropdownMenu>
             <DropdownMenuTrigger
@@ -85,8 +90,18 @@ export function KeywordWorkspaceLayout() {
         className="workspace-main"
         tabIndex={-1}
       >
-        <Outlet context={jobs} />
+        <Outlet context={{ ...jobs, openJobLogs: logDialog.openJobLogs }} />
       </main>
+      {logDialog.target && (
+        <JobLogDialog
+          key={logDialog.job?.jobId ?? logDialog.target.id}
+          target={logDialog.target}
+          job={logDialog.job ?? jobs.getJob(logDialog.target.id)}
+          open={logDialog.open}
+          onOpenChange={logDialog.setOpen}
+          onClose={logDialog.closeLogs}
+        />
+      )}
     </div>
   )
 }

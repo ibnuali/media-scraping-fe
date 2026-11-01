@@ -18,8 +18,6 @@ interface KeywordFormModalProps {
   editingKeyword: KeywordResponse | null
   keyword: string
   setKeyword: (value: string) => void
-  maxResult: number
-  setMaxResult: (value: number) => void
   formError: string
   isSubmitting: boolean
   onClose: () => void
@@ -31,8 +29,6 @@ export function KeywordFormModal({
   mode,
   keyword,
   setKeyword,
-  maxResult,
-  setMaxResult,
   formError,
   isSubmitting,
   onClose,
@@ -75,33 +71,6 @@ export function KeywordFormModal({
                 autoFocus
                 className="h-10"
               />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="maxResult">Max results</Label>
-              <Input
-                id="maxResult"
-                type="number"
-                min={1}
-                max={100}
-                placeholder="1–100"
-                value={maxResult || ""}
-                onChange={(e) => {
-                  const value = e.target.value
-                  if (value === "") {
-                    setMaxResult(0)
-                    return
-                  }
-                  const parsed = parseInt(value)
-                  if (!isNaN(parsed)) {
-                    setMaxResult(parsed)
-                  }
-                }}
-                disabled={isSubmitting}
-                className="h-10 font-mono tabular-nums"
-              />
-              <p className="font-mono text-[11px] text-ink-3">
-                articles pulled per scrape · 1–100
-              </p>
             </div>
           </div>
           <DialogFooter className="gap-2">

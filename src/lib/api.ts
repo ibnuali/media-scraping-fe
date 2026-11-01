@@ -1,5 +1,5 @@
 import type { PasswordChange, Token, UserProfileUpdate } from "@/types/auth"
-import type { PublicationDateRange } from "@/types/keyword"
+import type { JobLogFilters, PublicationDateRange } from "@/types/keyword"
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000"
 const WS_URL = import.meta.env.VITE_WS_URL || API_URL.replace(/^http/, "ws")
@@ -274,6 +274,33 @@ export const keywordsApi = {
   getScrapeJob: async (jobId: string) => {
     return apiFetch<import("@/types/keyword").ScrapingJobResponse>(
       `/keywords/scrape-jobs/${jobId}`
+    )
+  },
+
+  getJobHistory: async (keywordId: string, limit = 20, offset = 0) => {
+    const params = new URLSearchParams({
+      limit: String(limit),
+      offset: String(offset),
+    })
+    return apiFetch<import("@/types/keyword").PaginatedJobHistoryResponse>(
+      `/keywords/${keywordId}/jobs?${params}`
+    )
+  },
+
+  getJobLogs: async (
+    jobId: string,
+    limit = 100,
+    offset = 0,
+    filters: JobLogFilters = {}
+  ) => {
+    const params = new URLSearchParams({
+      limit: String(limit),
+      offset: String(offset),
+    })
+    if (filters.stage) params.set("stage", filters.stage)
+    if (filters.status) params.set("status", filters.status)
+    return apiFetch<import("@/types/keyword").PaginatedJobLogsResponse>(
+      `/keywords/scrape-jobs/${jobId}/logs?${params}`
     )
   },
 

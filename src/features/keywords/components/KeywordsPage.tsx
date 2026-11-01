@@ -1,5 +1,5 @@
 import { useOutletContext } from "react-router-dom"
-import type { useAsyncScrape } from "@/hooks/use-async-scrape"
+import type { KeywordWorkspaceContext } from "../hooks/use-job-log-dialog"
 import { useKeywordWorkspace } from "../hooks/use-keyword-workspace"
 import { KeywordFormModal } from "./KeywordFormModal"
 import { KeywordPicker } from "./KeywordPicker"
@@ -7,7 +7,7 @@ import { KeywordNewsPanel } from "./KeywordNewsPanel"
 
 export function KeywordsPage() {
   const workspace = useKeywordWorkspace()
-  const jobs = useOutletContext<ReturnType<typeof useAsyncScrape>>()
+  const jobs = useOutletContext<KeywordWorkspaceContext>()
   const { dialog, selectedKeyword } = workspace
 
   return (
@@ -34,11 +34,10 @@ export function KeywordsPage() {
         job={selectedKeyword ? jobs.getJob(selectedKeyword.id) : undefined}
         isBusy={selectedKeyword ? jobs.isPolling(selectedKeyword.id) : false}
         onScrape={(filters) => {
-          if (selectedKeyword)
+          if (selectedKeyword) {
+            jobs.openJobLogs(selectedKeyword)
             jobs.startAsyncScrape(selectedKeyword.id, filters)
-        }}
-        onAnalyze={() => {
-          if (selectedKeyword) jobs.startAsyncAnalysis(selectedKeyword.id)
+          }
         }}
         onAdd={dialog.openCreateDialog}
       />
@@ -48,8 +47,6 @@ export function KeywordsPage() {
         editingKeyword={dialog.editingKeyword}
         keyword={dialog.keyword}
         setKeyword={dialog.setKeyword}
-        maxResult={dialog.maxResult}
-        setMaxResult={dialog.setMaxResult}
         formError={dialog.formError}
         isSubmitting={workspace.isSubmitting}
         onClose={dialog.closeDialog}

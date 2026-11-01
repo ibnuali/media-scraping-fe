@@ -3,19 +3,16 @@ export interface KeywordResponse {
   id: string // UUID
   user_id: string // UUID
   keyword: string
-  max_result: number
   last_scraped: string | null
   keyword_summary: string | null
 }
 
 export interface KeywordCreate {
   keyword: string
-  max_result?: number
 }
 
 export interface KeywordUpdate {
   keyword?: string
-  max_result?: number
 }
 
 export interface NewsResponse {
@@ -52,6 +49,7 @@ export interface PublicationDateRange {
 
 export type ScrapingJobStatus = "pending" | "running" | "completed" | "failed"
 export type KeywordJobKind = "scrape" | "analysis"
+export type KeywordJobType = KeywordJobKind | "summary" | "legacy"
 
 export type ScrapingJobStage =
   | "searching"
@@ -64,15 +62,54 @@ export type ScrapingJobStage =
 export interface ScrapingJobResponse extends PublicationDateRange {
   id: string // UUID
   keyword_id: string // UUID
+  job_type: KeywordJobType
   status: ScrapingJobStatus
   stage: ScrapingJobStage
   total: number | null
   successful: number
   failed: number
+  skipped: number
   error_message: string | null
   started_at: string | null
   completed_at: string | null
   created_at: string
+}
+
+export interface PaginatedJobHistoryResponse {
+  total: number
+  limit: number
+  offset: number
+  has_more: boolean
+  items: ScrapingJobResponse[]
+}
+
+export interface JobLogResponse {
+  id: string
+  job_id: string
+  url: string
+  stage: string
+  status: string
+  payload: Record<string, unknown>
+  error: string | null
+  created_at: string
+}
+
+export type JobLogStage =
+  "searching" | "scraping" | "analyzing" | "summarizing" | "legacy"
+
+export type JobLogStatus = "info" | "success" | "failed" | "skipped"
+
+export interface JobLogFilters {
+  stage?: JobLogStage
+  status?: JobLogStatus
+}
+
+export interface PaginatedJobLogsResponse {
+  total: number
+  limit: number
+  offset: number
+  has_more: boolean
+  items: JobLogResponse[]
 }
 
 export interface ScrapingJobStartResponse {

@@ -6,7 +6,6 @@ import { ArticleAnalysisLink } from "@/features/news/components/ArticleAnalysisL
 import type { KeywordResponse, PublicationDateRange } from "@/types/keyword"
 import type { ScrapeJob } from "@/hooks/use-async-scrape"
 import { KeywordNewsToolbar } from "./KeywordNewsToolbar"
-import { KeywordJobStatus } from "./KeywordJobStatus"
 
 interface KeywordNewsPanelProps {
   keyword?: KeywordResponse
@@ -15,7 +14,6 @@ interface KeywordNewsPanelProps {
   job?: ScrapeJob
   isBusy: boolean
   onScrape: (filters?: PublicationDateRange) => void
-  onAnalyze: () => void
   onAdd: () => void
 }
 
@@ -26,7 +24,6 @@ export function KeywordNewsPanel({
   job,
   isBusy,
   onScrape,
-  onAnalyze,
   onAdd,
 }: KeywordNewsPanelProps) {
   const news = useNews(keyword?.id ?? null, !!keyword)
@@ -64,9 +61,7 @@ export function KeywordNewsPanel({
             job={job}
             isBusy={isBusy}
             onScrape={onScrape}
-            onAnalyze={onAnalyze}
           />
-          {job && <KeywordJobStatus job={job} />}
           <div className="keyword-news-scroll" key={keyword.id}>
             {news.isLoading ? (
               <WorkspaceLoading />

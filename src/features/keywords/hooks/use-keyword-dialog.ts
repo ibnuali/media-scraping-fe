@@ -9,12 +9,10 @@ export function useKeywordDialog() {
     null
   )
   const [keyword, setKeyword] = useState("")
-  const [maxResult, setMaxResult] = useState(10)
   const [formError, setFormError] = useState("")
 
   const openCreateDialog = () => {
     setKeyword("")
-    setMaxResult(10)
     setFormError("")
     setDialogMode("create")
   }
@@ -22,7 +20,6 @@ export function useKeywordDialog() {
   const openEditDialog = (kw: KeywordResponse) => {
     setEditingKeyword(kw)
     setKeyword(kw.keyword)
-    setMaxResult(kw.max_result)
     setFormError("")
     setDialogMode("edit")
   }
@@ -31,7 +28,6 @@ export function useKeywordDialog() {
     setDialogMode(null)
     setEditingKeyword(null)
     setKeyword("")
-    setMaxResult(10)
     setFormError("")
   }
 
@@ -40,8 +36,6 @@ export function useKeywordDialog() {
     editingKeyword,
     keyword,
     setKeyword,
-    maxResult,
-    setMaxResult,
     formError,
     setFormError,
     openCreateDialog,

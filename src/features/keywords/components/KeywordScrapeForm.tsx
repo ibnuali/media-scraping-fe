@@ -1,4 +1,5 @@
 import { useId, useState } from "react"
+import { format } from "date-fns"
 import { Loader2, Play } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,8 +19,10 @@ export function KeywordScrapeForm({
   onScrape,
 }: KeywordScrapeFormProps) {
   const id = useId()
-  const [startDate, setStartDate] = useState("")
-  const [endDate, setEndDate] = useState("")
+  const [startDate, setStartDate] = useState(() =>
+    format(new Date(), "yyyy-MM-dd")
+  )
+  const [endDate, setEndDate] = useState(startDate)
   const [error, setError] = useState("")
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -50,7 +53,7 @@ export function KeywordScrapeForm({
           value={startDate}
           max={endDate || undefined}
           disabled={isBusy}
-          aria-describedby={`${id}-hint${error ? ` ${id}-error` : ""}`}
+          aria-describedby={error ? `${id}-error` : undefined}
           aria-invalid={!!error}
           onChange={(event) => {
             setStartDate(event.target.value)
@@ -66,7 +69,7 @@ export function KeywordScrapeForm({
           value={endDate}
           min={startDate || undefined}
           disabled={isBusy}
-          aria-describedby={`${id}-hint${error ? ` ${id}-error` : ""}`}
+          aria-describedby={error ? `${id}-error` : undefined}
           aria-invalid={!!error}
           onChange={(event) => {
             setEndDate(event.target.value)
@@ -82,11 +85,6 @@ export function KeywordScrapeForm({
         )}
         {isScraping ? "Scraping…" : "Scrape news"}
       </Button>
-      <p id={`${id}-hint`} className="keyword-scrape-hint">
-        Filter by publication date, including both dates. Leave either date
-        empty for no limit. Articles without a publication date are skipped when
-        a date is set.
-      </p>
       {error && (
         <p id={`${id}-error`} className="keyword-scrape-error" role="alert">
           {error}

@@ -1,0 +1,345 @@
+/* Hallmark · component: process logs · genre: modern-minimal · theme: KeyCrawl
+ * Terminal output with app-themed controls; pre-emit critique: P4 H4 E4 S5 R5 V4
+ */
+.job-log-dialog {
+  display: flex;
+  flex-direction: column;
+  width: min(72rem, calc(100vw - var(--space-xl)));
+  max-width: none;
+  height: min(48rem, calc(100dvh - var(--space-xl)));
+  max-height: calc(100dvh - var(--space-xl));
+  padding: 0;
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  animation: none;
+}
+.job-log-heading,
+.job-log-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg);
+  flex-shrink: 0;
+}
+.job-log-heading {
+  align-items: flex-start;
+  border-bottom: 1px solid var(--border);
+}
+.job-log-heading > div {
+  min-width: 0;
+}
+.job-log-heading [data-slot="dialog-title"] {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+  line-height: 1.4;
+}
+.job-log-heading [data-slot="dialog-description"] {
+  margin-top: var(--space-xs);
+  line-height: 1.5;
+}
+.job-log-heading button {
+  flex-shrink: 0;
+}
+.job-log-controls {
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--space-2xs);
+}
+.job-log-dialog .keyword-job-status {
+  padding-block: var(--space-xs);
+  font-family: var(--font-mono);
+}
+.job-log-dialog .keyword-job-status > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs) var(--space-lg);
+}
+.job-log-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.job-log-filters > div {
+  display: grid;
+  gap: var(--space-xs);
+  flex: 0 1 16rem;
+  min-width: 0;
+}
+.job-log-filters select {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid var(--input);
+  border-radius: var(--radius-md);
+  background: var(--background);
+  color: var(--foreground);
+  font: inherit;
+  font-size: var(--text-xs);
+}
+.job-log-filters > p {
+  flex-basis: 100%;
+  font-size: var(--text-xs);
+  color: var(--muted-foreground);
+}
+.job-log-list-content {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  min-height: 0;
+  min-width: 0;
+  flex: 1 1 auto;
+  background: var(--terminal-background);
+  color: var(--terminal-foreground);
+  color-scheme: var(--terminal-color-scheme);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: 1.7;
+  scrollbar-color: var(--terminal-rule) var(--terminal-background);
+  scrollbar-gutter: stable;
+  tab-size: 2;
+}
+.job-log-list-content .workspace-state p,
+.job-log-list-content .workspace-state > svg {
+  color: var(--terminal-muted);
+}
+.job-log-list-content [data-slot="skeleton"] {
+  background: var(--terminal-raised);
+}
+.job-log-list-content .workspace-state h2 {
+  font-size: var(--text-sm);
+}
+.job-log-list-content button {
+  border-color: var(--terminal-rule);
+  background: var(--terminal-raised);
+  color: var(--terminal-foreground);
+}
+.job-log-list-content button:hover:not(:disabled) {
+  border-color: var(--terminal-muted);
+}
+.job-log-list {
+  padding: var(--space-sm) var(--space-md);
+}
+.job-log-item {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: var(--space-md);
+  padding-block: var(--space-2xs);
+  overflow-wrap: anywhere;
+}
+.job-log-item:hover,
+.job-log-item:focus-within {
+  background: var(--terminal-raised);
+}
+.job-log-item-meta {
+  display: grid;
+  grid-template-columns: 13ch 14ch 12ch;
+  align-items: baseline;
+  gap: var(--space-sm);
+  color: var(--terminal-muted);
+}
+.job-log-item-meta time {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.job-log-stage {
+  min-width: 0;
+}
+.job-log-item-body {
+  min-width: 0;
+}
+.job-log-item-title {
+  font-weight: 600;
+}
+.job-log-item a {
+  color: var(--terminal-link);
+  word-break: break-all;
+  text-decoration: underline;
+  text-underline-offset: var(--space-2xs);
+}
+.job-log-result {
+  color: var(--terminal-muted);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.job-log-result::before {
+  content: "[";
+}
+.job-log-result::after {
+  content: "]";
+}
+.job-log-source,
+.job-search-context {
+  color: var(--terminal-muted);
+}
+.job-log-item[data-result="success"] .job-log-result {
+  color: var(--terminal-success);
+}
+.job-log-item[data-result="skipped"] .job-log-result {
+  color: var(--terminal-warning);
+}
+.job-log-item[data-result="failed"] .job-log-result,
+.job-log-error {
+  color: var(--terminal-error);
+}
+.job-log-item details {
+  margin-top: var(--space-xs);
+}
+.job-log-item summary {
+  width: fit-content;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  min-height: 1.5rem;
+  color: var(--terminal-link);
+}
+.job-log-snapshot {
+  margin-top: var(--space-sm);
+  white-space: pre-wrap;
+}
+.job-search-details {
+  display: block;
+}
+.job-search-request {
+  display: block;
+}
+.job-search-method,
+.job-search-http {
+  font-weight: 600;
+}
+.job-search-context,
+.job-search-http {
+  white-space: nowrap;
+}
+.job-search-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-md);
+}
+.job-search-counts > div {
+  display: flex;
+  gap: var(--space-xs);
+}
+.job-search-counts dt {
+  color: var(--terminal-muted);
+}
+.job-search-counts dd {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.job-search-results {
+  display: grid;
+  gap: var(--space-xs);
+  padding-block: var(--space-xs);
+}
+.job-log-footer {
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--muted-foreground);
+}
+.job-log-notice {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  color: var(--destructive);
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+.job-log-dock {
+  position: fixed;
+  z-index: 40;
+  bottom: var(--space-md);
+  right: var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: min(26rem, calc(100vw - var(--space-xl)));
+  padding: var(--space-xs);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  color: var(--foreground);
+}
+.job-log-restore {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-xs);
+  text-align: start;
+  cursor: pointer;
+}
+.job-log-restore > svg {
+  flex-shrink: 0;
+}
+.job-log-restore > span {
+  display: grid;
+  min-width: 0;
+  flex: 1;
+  gap: var(--space-2xs);
+  overflow-wrap: anywhere;
+  font-size: var(--text-xs);
+}
+.job-log-dock strong {
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+.job-log-restore > span > span {
+  color: var(--muted-foreground);
+}
+.job-log-dialog :is(button, a, summary, select):focus-visible,
+.job-log-dock button:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+.job-log-list-content :is(button, a, summary):focus-visible {
+  outline-color: var(--terminal-link);
+}
+@media (max-width: 64rem) {
+  .job-log-item-meta {
+    grid-template-columns: 13ch 14ch;
+    gap: 0 var(--space-sm);
+  }
+  .job-log-stage {
+    grid-column: 2;
+  }
+}
+@media (max-width: 48rem) {
+  .job-log-item {
+    grid-template-columns: minmax(0, 1fr);
+    padding-block: var(--space-xs);
+  }
+  .job-log-item-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-sm);
+  }
+  .job-log-stage {
+    margin-inline-start: auto;
+  }
+}
+@media (max-width: 30rem) {
+  .job-log-heading,
+  .job-log-footer,
+  .job-log-filters {
+    padding-inline: var(--space-md);
+  }
+  .job-log-footer {
+    flex-wrap: wrap;
+  }
+  .job-log-filters > div {
+    flex: 1 1 9rem;
+  }
+}

@@ -22,6 +22,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { NotificationBell } from "@/features/notifications"
+import { JobHistoryControl } from "@/features/keywords/components/JobHistoryControl"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useNotificationWebSocket } from "@/hooks/use-notification-websocket"
 import { showNotificationToast } from "@/features/notifications/hooks/use-notifications"
@@ -356,6 +357,7 @@ export function MainLayout() {
             </div>
             <div className="flex items-center gap-0.5">
               <ThemeToggle />
+              <JobHistoryControl />
               <NotificationBell />
             </div>
           </header>

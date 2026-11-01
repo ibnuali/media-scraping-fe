@@ -172,3 +172,17 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Process log output follows the active app theme. */
+.light {
+  --terminal-color-scheme: light;
+  --terminal-background: var(--background);
+  --terminal-foreground: var(--foreground);
+  --terminal-muted: var(--muted-foreground);
+  --terminal-raised: var(--secondary);
+  --terminal-rule: var(--muted-foreground);
+  --terminal-success: oklch(0.45 0.11 155);
+  --terminal-warning: oklch(0.45 0.1 75);
+  --terminal-error: var(--destructive);
+  --terminal-link: var(--primary);
+}

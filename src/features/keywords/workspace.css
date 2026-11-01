@@ -256,12 +256,6 @@
   font-size: var(--text-xs);
   white-space: nowrap;
 }
-.keyword-news-analysis-note {
-  flex-basis: 100%;
-  font-size: var(--text-xs);
-  line-height: 1.5;
-  color: var(--workspace-muted-ink);
-}
 .keyword-news-scroll {
   min-height: 0;
   min-width: 0;
@@ -445,6 +439,11 @@
   padding: var(--space-lg) var(--space-md) var(--space-3xl);
 }
 .keyword-analytics-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
   padding-block: var(--space-lg);
 }
 .keyword-analytics-header h1 {
